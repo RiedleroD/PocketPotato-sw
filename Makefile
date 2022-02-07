@@ -1,16 +1,17 @@
 .PHONY: build flash clean fresh tests
 
 #some variable
-PATH_TO = ./somewhere/
+BOARD = "arduino:avr:nano"
+LIBS = "./external/GyverButton/"
 
 flash : build
-	echo "TODO"
+	arduino-cli upload -i "./build/arduino.avr.nano/pocketpotato.ino.elf" #TODO: complete
 build :
-	arduino-cli compile --fqbn "arduino:avr:nano" --libraries "external/GyverButton/" ./
+	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
 tests :
 	echo "generate test binaries"
 clean :
-	echo "remove generated files"
+	rm ./build -drf
 prepare :
 	arduino-cli core install arduino:avr
 	arduino-cli lib install "Adafruit SSD1306"
