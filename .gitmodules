@@ -1,0 +1,3 @@
+[submodule "external/GyverButton"]
+	path = external/GyverButton
+	url = git@github.com:GyverLibs/GyverButton.git
