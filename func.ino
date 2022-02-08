@@ -53,7 +53,7 @@ void drawTexture(uint8_t _x,uint8_t _y,const uint8_t texture[],uint8_t width,uin
 			//reading single bit from texture array;
 			//pretty sure the lib knows that we're working with a single-bit
 			//color & we don't need values larger than 1 to draw pixels
-			display.writePixel(x,y,( 1 & (texture[i] >> j) ));
+			display.drawPixel(x,y,( 1 & (texture[i] >> j) ));
 		}
 		//incrementing counters
 		if(j>=15){

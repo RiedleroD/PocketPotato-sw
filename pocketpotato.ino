@@ -1,3 +1,4 @@
+#include <SPI.h>
 #include <EEPROM.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_GrayOLED.h>
@@ -8,7 +9,7 @@
 #include "bitmaps.h"
 
 #define SSD1306_NO_SPLASH
-Adafruit_SSD1306 display(128, 64, 9, 10, 11, 13, 12);
+Adafruit_SSD1306 display(128, 64, &SPI, 11, 13, 12);
 GButton up(BTN_UP, LOW_PULL);
 GButton down(BTN_DOWN, LOW_PULL);
 GButton left(BTN_LEFT, LOW_PULL);
@@ -29,6 +30,7 @@ void setup() {
 	up.setStepTimeout(STEP_TIMEOUT);
 	down.setStepTimeout(STEP_TIMEOUT);
 	
+	SPI.begin();
 	display.begin(SSD1306_SWITCHCAPVCC);
 	display.clearDisplay();
 	showLogo(); // Show logo. OLED contrast after this function is low 
