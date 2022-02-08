@@ -5,6 +5,7 @@
 # and also some other minor deviations
 #
 # TODO: delta variants (heh)
+# TODO: block variants
 from sys import argv, exit
 from math import log2,floor
 from random import randrange
