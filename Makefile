@@ -3,9 +3,10 @@
 #some variable
 BOARD = "arduino:avr:nano"
 LIBS = "./external/GyverButton/"
+PORT = /dev/ttyUSB0
 
 flash : build
-	arduino-cli upload -i "./build/arduino.avr.nano/pocketpotato.ino.elf" #TODO: complete
+	arduino-cli upload -i "./build/arduino.avr.nano/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
 build :
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
 tests :
