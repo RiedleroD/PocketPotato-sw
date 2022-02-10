@@ -5,6 +5,11 @@ BOARD = "arduino:avr:nano"
 LIBS = "./external/GyverButton/"
 PORT = /dev/ttyUSB0
 
+all : | flash debug
+debug :
+	stty -F $(PORT) raw 9600
+	cat $(PORT)
+
 flash : build
 	arduino-cli upload -i "./build/arduino.avr.nano/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
 build :
