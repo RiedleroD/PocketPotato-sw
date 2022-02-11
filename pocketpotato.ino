@@ -1,3 +1,4 @@
+#include <SPI.h>
 #include <EEPROM.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_GrayOLED.h>
@@ -9,7 +10,7 @@
 
 #define SSD1306_NO_SPLASH
 //TODO: initialize with hardware SPI
-Adafruit_SSD1306 display(128, 64, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+Adafruit_SSD1306 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS);
 GButton up(BTN_UP, LOW_PULL);
 GButton down(BTN_DOWN, LOW_PULL);
 GButton left(BTN_LEFT, LOW_PULL);
@@ -21,6 +22,8 @@ uint8_t menu = 0;
 void setup() {
 	Serial.begin(9600);
 	Serial.println(F("called setup()"));
+	
+	SPI.begin();
 	
 	up.setTickMode(AUTO); // Automatically check button status
 	down.setTickMode(AUTO);
