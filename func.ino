@@ -70,8 +70,6 @@ void drawMenu() {
 		display.print(arrayBuf);
 	}
 	//write arrow
-	//TODO: replace with texture
-	display.setCursor(0,menu*10);
-	display.print('>');
+	drawTexture(1,menu*10,arrow,5,9);
 	display.display();
 }
