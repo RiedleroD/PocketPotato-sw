@@ -1,8 +1,10 @@
-.PHONY: build flash clean fresh tests
+.PHONY: all debug build flash clean fresh tests prepare
 
-#some variable
+#full qualifying board name (see `arduino-cli board search` for all boards)
 BOARD = "arduino:avr:nano"
+#external libraries (external to arduino-cli, at least)
 LIBS = "./external/GyverButton/"
+#port the arduino is connected to. TODO: remove and replace with `arduino-cli board list`
 PORT = /dev/ttyUSB0
 
 all : | flash debug
@@ -14,12 +16,10 @@ flash : build
 	arduino-cli upload -i "./build/arduino.avr.nano/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
 build :
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
-tests :
-	echo "generate test binaries"
+#tests :	# TODO: make test cases
+#	echo "generate test binaries"
 clean :
 	rm ./build -drf
 prepare :
 	arduino-cli core install arduino:avr
 	arduino-cli lib install "Adafruit SSD1306"
-
-fresh : | clean build
