@@ -20,6 +20,7 @@ build :
 #	echo "generate test binaries"
 clean :
 	rm ./build -drf
+	rm ./__pycache__ -drf
 prepare :
 	arduino-cli core install arduino:avr
 	arduino-cli lib install "Adafruit SSD1306"
