@@ -9,7 +9,6 @@
 #include "bitmaps.h"
 
 #define SSD1306_NO_SPLASH
-//TODO: initialize with hardware SPI
 Adafruit_SSD1306 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS);
 GButton up(BTN_UP, LOW_PULL);
 GButton down(BTN_DOWN, LOW_PULL);
