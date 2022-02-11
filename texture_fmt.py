@@ -4,6 +4,7 @@
 # with blocks of 8 bits instead of just 2 because I am lazy.
 # and also some other minor deviations
 #
+# TODO: describe flags, delta encoding and RLE in Readme or something
 # TODO: block variants
 from sys import argv, exit
 from math import log2,floor
@@ -32,45 +33,48 @@ def decompress(tx:str) -> str:
 			return RLEdecode(tx)
 
 def compress(tx:str) -> str:
+	encs=([],[],[],[])#TODO: refactor. This is garbage and inefficient and I don't wanna see it
 	
-	simpleEnc=add_start_bit(
-		RLEencode(
-			get_numlist_from_binstring(tx)
+	for block_size in range(2,10):
+		encs[0].append(
+			add_start_bit(
+				RLEencode(tx,block_size)
 			)
 		)
-	
-	deltaEnc=add_start_bit(
-		RLEencode(
-			get_numlist_from_binstring(
-				delta_encode(tx)
+		encs[1].append(
+			add_start_bit(
+				RLEencode(
+					delta_encode(tx),
+					block_size
 				)
 			)
 		)
-	deltaDec=add_start_bit(
-		RLEencode(
-			get_numlist_from_binstring(
-				delta_decode(tx)
+		encs[2].append(
+			add_start_bit(
+				RLEencode(
+					delta_decode(tx),
+					block_size
 				)
 			)
 		)
-	ddeltaEnc=add_start_bit(
-		RLEencode(
-			get_numlist_from_binstring(
-				delta_encode(delta_encode(tx))
+		encs[3].append(
+			add_start_bit(
+				RLEencode(
+					delta_encode(delta_encode(tx)),
+					block_size
 				)
 			)
 		)
-	
-	lens=(len(simpleEnc),len(deltaEnc),len(deltaDec),len(ddeltaEnc))
-	chosen=min(lens)
-	if chosen==lens[0]:
-		return "00"+simpleEnc
-	elif chosen==lens[1]:
-		return "01"+deltaEnc
-	elif chosen==lens[2]:
-		return "10"+deltaDec
+	chosen = min(min(encs[0],key=len),min(encs[1],key=len),min(encs[2],key=len),min(encs[3],key=len),key=len)
+		
+	if chosen in encs[0]:
+		return "00"+chosen
+	elif chosen in encs[1]:
+		return "01"+chosen
+	elif chosen in encs[2]:
+		return "10"+chosen
 	else:
-		return "11"+ddeltaEnc
+		return "11"+chosen
 
 def add_start_bit(tx):
 	if tx[0:8]=="0"*8:
@@ -79,55 +83,53 @@ def add_start_bit(tx):
 		return "0"+tx
 
 """decodes binary string to binary string per RLE"""
-def RLEdecode(tx:str) -> str:
+def RLEdecode(tx:str,block_size=None) -> str:
 	decoded=[]
 	i=0
 	curRLE=False
 	l=len(tx)
+	if block_size==None:
+		i=3
+		block_size=2+(int(tx[0:3],2))
+	assert 2<=block_size<=10#we need at least a block size of 2 and can only encode up to 10, since we only have 3 bits for that in the flag
 	while i<l:
-		curByte=tx[i:i+8]
-		i+=8
-		if curByte=="0"*8:
+		curBlock=tx[i:i+block_size]
+		i+=block_size
+		if curBlock=="0"*block_size:
 			if i>=l:#safety measure in case we end on an 0x00
 				break
 			packet_length=get_RLE_packet_length(tx[i:])
-			decoded.append("0"*8*decode_RLE_packet(tx[i:i+packet_length],packet_length))
+			decoded.append("0"*block_size*decode_RLE_packet(tx[i:i+packet_length],packet_length))
 			i+=packet_length
-		elif len(curByte)<8:
-			break #last non-RLE packet can be complete, but is discarded then
+		elif len(curBlock)<block_size:
+			break #last block can be incomplete, but is discarded then
 		else:#non-RLE packets are just raw data. No decoding here.
-			decoded.append(curByte)
+			decoded.append(curBlock)
 	return "".join(decoded)
 
 """encodes list of hexadecimal values to binary string per RLE"""
-def RLEencode(tx:list) -> str:
-	curRLE=False
-	encoded=0b00
+def RLEencode(tx:str,block_size=8) -> str:
+	encoded=""
 	i=0 # index in encoded texture
-	j=0 # length of current RLE packet
-	for hx in tx: # going over the texture in hexadecimal blocks
-		if hx==0:
+	curRLE=0
+	l=len(tx)
+	assert 2<=block_size<=10#see RLEdecode
+	while i<l:
+		curBlock=tx[i:i+block_size]
+		i+=block_size
+		if curBlock=="0"*block_size:
 			if not curRLE:
-				i+=8#end non-RLE packet with a wall of zeroes
-				encoded<<=8
-				curRLE=True
-			j+=1
+				encoded+="0"*block_size
+			curRLE+=1
 		else:
 			if curRLE:
-				encpack=encode_RLE_packet(j)
-				encpacklen=len(encpack)
-				encoded=(encoded<<encpacklen) | int(encpack,2)
-				i+=encpacklen
-				j=0
-				curRLE=False
-			encoded=(encoded << 8) | hx
-			i+=8
-	if curRLE:#flush unfinished RLE packet if it exists
-		encpack=encode_RLE_packet(j)
-		encpacklen=len(encpack)
-		encoded=(encoded<<encpacklen)+int(encpack,2)
-		i+=encpacklen
-	return f"{{:0{i}b}}".format(encoded)
+				encoded+=encode_RLE_packet(curRLE)
+				curRLE=0
+			encoded+=curBlock
+	if curRLE:
+		encoded+=encode_RLE_packet(curRLE)
+		curRLE=0
+	return f"{block_size-2:03b}"+encoded
 
 """encodes a RLE packet"""
 def encode_RLE_packet(num:int) -> str:
@@ -200,8 +202,9 @@ if __name__=="__main__":
 				print(f"packet not gut: {i}!={j}")
 		print("testing RLE encoding")
 		for name, tx in textures.items():
+			tx=get_binstring_from_numlist(tx)
 			tx2=RLEdecode(RLEencode(tx))
-			if get_binstring_from_numlist(tx)!=tx2:
+			if tx!=tx2:
 				print(f"RLE not gut: {name} is fuckd\n{tx}\n{tx2}")
 		print("testing delta encoding")
 		for i in range(1000):
