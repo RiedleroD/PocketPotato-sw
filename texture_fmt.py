@@ -4,7 +4,6 @@
 # with blocks of 8 bits instead of just 2 because I am lazy.
 # and also some other minor deviations
 #
-# TODO: delta variants (heh)
 # TODO: block variants
 from sys import argv, exit
 from math import log2,floor
@@ -16,11 +15,68 @@ with open("./textures.json") as f:
 textures = pyjson5.decode(data)
 del data
 
-def decompress(tx:list) -> str:
-	return delta_decode(RLEdecode(tx))
+def decompress(tx:str) -> str:
+	flags=int(tx[:3],2)
+	tx=tx[3:]
+	if flags & 0x01:
+		tx=8*"0"+tx
+	if flags & 0x02:
+		if flags & 0x04:
+			return delta_decode(delta_decode(RLEdecode(tx)))
+		else:
+			return delta_decode(RLEdecode(tx))
+	else:
+		if flags & 0x04:
+			return delta_encode(RLEdecode(tx))
+		else:
+			return RLEdecode(tx)
 
-def compress(tx:list) -> str:
-	return RLEencode(get_numlist_from_binstring(delta_encode(tx)))
+def compress(tx:str) -> str:
+	
+	simpleEnc=add_start_bit(
+		RLEencode(
+			get_numlist_from_binstring(tx)
+			)
+		)
+	
+	deltaEnc=add_start_bit(
+		RLEencode(
+			get_numlist_from_binstring(
+				delta_encode(tx)
+				)
+			)
+		)
+	deltaDec=add_start_bit(
+		RLEencode(
+			get_numlist_from_binstring(
+				delta_decode(tx)
+				)
+			)
+		)
+	ddeltaEnc=add_start_bit(
+		RLEencode(
+			get_numlist_from_binstring(
+				delta_encode(delta_encode(tx))
+				)
+			)
+		)
+	
+	lens=(len(simpleEnc),len(deltaEnc),len(deltaDec),len(ddeltaEnc))
+	chosen=min(lens)
+	if chosen==lens[0]:
+		return "00"+simpleEnc
+	elif chosen==lens[1]:
+		return "01"+deltaEnc
+	elif chosen==lens[2]:
+		return "10"+deltaDec
+	else:
+		return "11"+ddeltaEnc
+
+def add_start_bit(tx):
+	if tx[0:8]=="0"*8:
+		return "1"+tx[8:]
+	else:
+		return "0"+tx
 
 """decodes binary string to binary string per RLE"""
 def RLEdecode(tx:str) -> str:
@@ -159,7 +215,7 @@ if __name__=="__main__":
 			cx=compress(tx)
 			tx2=decompress(cx)
 			if tx!=tx2:
-				print(f"final not gut:\n{tx}\n{tx2}")
+				print(f"final {name} not gut:\n{tx}\n{tx2}")
 			else:
 				print(f"{100*(1-len(cx)/len(tx)):2.0f}% compression: {name}")
 			
