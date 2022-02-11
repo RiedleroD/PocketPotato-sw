@@ -161,7 +161,7 @@ if __name__=="__main__":
 			if tx!=tx2:
 				print(f"final not gut:\n{tx}\n{tx2}")
 			else:
-				print(f"{100*(1-len(cx)/len(tx)):3.0f}% compression: {name}")
+				print(f"{100*(1-len(cx)/len(tx)):2.0f}% compression: {name}")
 			
 		exit()
 	elif argv[1] in ("c","compress"):
@@ -170,5 +170,7 @@ if __name__=="__main__":
 		func = decompress
 
 	for name, tx in textures.items():
-		print(f"{name}:")
-		print(get_json_from_binstring(func(get_binstring_from_numlist(tx))),end="\n\n")
+		tx=get_binstring_from_numlist(tx)
+		cx=func(tx)
+		print(f"{name}: {100*(1-len(cx)/len(tx)):.0f}% compression")
+		print(get_json_from_binstring(cx),end="\n\n")
