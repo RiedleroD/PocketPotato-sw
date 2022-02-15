@@ -21,7 +21,7 @@ You'll need `arduino-cli` and `make` to compile the project.
 
 ### Textures
 
-- Draw a texture with black/white inverted. I can recommend [Piskel](https://piskelapp.com).
+- Draw a texture with black/white inverted. I can recommend [Piskel](https://www.piskelapp.com).
 - Export it as a png and feed it through [this tool](https://manytools.org/hacker-tools/image-to-byte-array/go/) to get it into the format C++ wants. In the future, this should be handled by `texture_fmt.py`, our texture formatting script.
 - Add the resulting array to the code, and format it the same way the other textures are formatted. Don't forget the comment!
 
