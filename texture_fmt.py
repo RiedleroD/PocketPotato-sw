@@ -7,7 +7,7 @@
 # TODO: describe flags, delta encoding and RLE in Readme or something
 # TODO: block variants
 from sys import argv, exit
-from os import makedirs
+from os import makedirs, path, listdir
 from math import log2,floor
 from random import randrange
 import pyjson5	#pyjson5
@@ -201,15 +201,32 @@ def get_png_from_numlist(numl,w,h):
 def get_png_from_binstring(numl,w,h):
 	return png.from_array(([numl[x+y*w]=='1' for x in range(w)] for y in range(h)),"L;1",{"height":h,"width":w})
 
+def get_binstring_from_png_filename(fp):
+	x=""
+	for row in png.Reader(filename=fp).asRGBA8()[2]:
+		x+="".join("1" if sum(row[i:i+4])//(4*255) else "0" for i in range(0,len(row),4))
+	return x
+
 if __name__=="__main__":
-	if len(argv)!=2 or argv[1] not in ("d","decompress","c","compress","t","test","dump"):
-		print("invoke this script with d/decompress c/compress t/test or dump as its first argument, and it will read from textures.json and print to stdout")
+	if len(argv)!=2 or argv[1] not in ("d","decompress","c","compress","t","test","dump","load"):
+		print("invoke this script with d/decompress c/compress t/test dump or load as its first argument, and it will read from textures.json and print to stdout")
 		exit()
 	elif argv[1]=="dump":
 		print("dumping to ./dump/")
-		makedirs("./dump/")
+		if not path.isdir("./dump"):
+			makedirs("./dump/")
 		for name,tx in textures.items():
 			get_png_from_numlist(tx[2],tx[0],tx[1]).save(f"./dump/{name}.png")
+		exit()
+	elif argv[1]=="load":
+		if path.isdir("./load"):
+			print("loading from ./load/")
+			for fn in listdir("./load/"):
+				fp=path.join("./load/", fn)
+				tx=get_binstring_from_png_filename(fp)
+				print(f"{fn}\n{get_json_from_binstring(tx)}")
+		else:
+			print("./load/ doesn't exist")
 		exit()
 	elif argv[1] in ("t","test"):
 		print("testing RLE packet encoding")
@@ -238,7 +255,6 @@ if __name__=="__main__":
 				print(f"final {name} not gut:\n{tx}\n{tx2}")
 			else:
 				print(f"{100*(1-len(cx)/len(tx)):2.0f}% compression: {name} ({len(cx)-len(tx):+d}b)")
-			
 		exit()
 	elif argv[1] in ("c","compress"):
 		func = compress
