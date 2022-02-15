@@ -7,9 +7,11 @@
 # TODO: describe flags, delta encoding and RLE in Readme or something
 # TODO: block variants
 from sys import argv, exit
+from os import makedirs
 from math import log2,floor
 from random import randrange
-import pyjson5
+import pyjson5	#pyjson5
+import png		#pypng
 
 with open("./textures.json") as f:
 	data = f.read()
@@ -193,9 +195,21 @@ def get_json_from_binstring(bstr):
 def get_binstring_from_numlist(j):
 	return "".join(f"{hx:08b}" for hx in j)
 
+def get_png_from_numlist(numl,w,h):
+	return get_png_from_binstring(get_binstring_from_numlist(numl),w,h)
+	
+def get_png_from_binstring(numl,w,h):
+	return png.from_array(([numl[x+y*w]=='1' for x in range(w)] for y in range(h)),"L;1",{"height":h,"width":w})
+
 if __name__=="__main__":
-	if len(argv)!=2 or argv[1] not in ("d","decompress","c","compress","t","test"):
-		print("invoke this script with d/decompress or c/compress as its first argument, and it will read from textures.json and print to stdout")
+	if len(argv)!=2 or argv[1] not in ("d","decompress","c","compress","t","test","dump"):
+		print("invoke this script with d/decompress c/compress t/test or dump as its first argument, and it will read from textures.json and print to stdout")
+		exit()
+	elif argv[1]=="dump":
+		print("dumping to ./dump/")
+		makedirs("./dump/")
+		for name,tx in textures.items():
+			get_png_from_numlist(tx[2],tx[0],tx[1]).save(f"./dump/{name}.png")
 		exit()
 	elif argv[1] in ("t","test"):
 		print("testing RLE packet encoding")
@@ -205,7 +219,7 @@ if __name__=="__main__":
 				print(f"packet not gut: {i}!={j}")
 		print("testing RLE encoding")
 		for name, tx in textures.items():
-			tx=get_binstring_from_numlist(tx)
+			tx=get_binstring_from_numlist(tx[2])
 			tx2=RLEdecode(RLEencode(tx))
 			if tx!=tx2:
 				print(f"RLE not gut: {name} is fuckd\n{tx}\n{tx2}")
@@ -217,7 +231,7 @@ if __name__=="__main__":
 				print(f"delta not gut:\n{randbin}\n{deltbin}")
 		print("testing final compression")
 		for name, tx in textures.items():
-			tx=get_binstring_from_numlist(tx)
+			tx=get_binstring_from_numlist(tx[2])
 			cx=compress(tx)
 			tx2=decompress(cx)
 			if tx!=tx2:
@@ -232,7 +246,7 @@ if __name__=="__main__":
 		func = decompress
 
 	for name, tx in textures.items():
-		tx=get_binstring_from_numlist(tx)
+		tx=get_binstring_from_numlist(tx[2])
 		cx=func(tx)
 		print(f"{name}: {100*(1-len(cx)/len(tx)):.0f}% compression ({len(cx)-len(tx):+d}b)")
 		print(get_json_from_binstring(cx),end="\n\n")
