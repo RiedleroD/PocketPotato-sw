@@ -13,11 +13,6 @@ from random import randrange
 import pyjson5	#pyjson5
 import png		#pypng
 
-with open("./textures.json") as f:
-	data = f.read()
-textures = pyjson5.decode(data)
-del data
-
 def decompress(tx:str) -> str:
 	flags=int(tx[:3],2)
 	tx=tx[3:]
@@ -208,6 +203,10 @@ def get_binstring_from_png_filename(fp):
 	return x
 
 if __name__=="__main__":
+	with open("./textures.json") as f:
+		data = f.read()
+	textures = pyjson5.decode(data)
+	del data
 	if len(argv)!=2 or argv[1] not in ("d","decompress","c","compress","t","test","dump","load"):
 		print("invoke this script with d/decompress c/compress t/test dump or load as its first argument, and it will read from textures.json and print to stdout")
 		exit()
