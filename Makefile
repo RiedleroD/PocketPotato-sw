@@ -7,7 +7,7 @@ $(info getting boards)
 #sets BOARD and PORT to hopefully correct values
 #for reference, here are some valid BOARDLIST examples:
 #/dev/cu.usbmodem14101             serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
-BOARDLIST ?= $(shell arduino-cli board list | grep "arduino:avr" | tail -f -n 1 -)
+BOARDLIST ?= $(shell arduino-cli board list | grep "arduino:avr" | tail -f -n 2 - | head -n 1)
 ifeq ($(BOARDLIST),)
     $(info trying again with a more lenient query)
     BOARDLIST = $(shell arduino-cli board list | tail -f -n 1 -)
@@ -29,7 +29,7 @@ debug :
 	cat $(PORT)
 
 flash : | detect-hardware build
-	arduino-cli upload -i "./build/arduino.avr.nano/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
+	arduino-cli upload -i "./build/$(subst :,.,$(BOARD))/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
 build : detect-hardware
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
 #tests :	# TODO: make test cases
