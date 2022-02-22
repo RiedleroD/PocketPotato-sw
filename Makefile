@@ -24,7 +24,7 @@ else
 endif
 
 all : | flash debug
-debug :
+debug : detect-hardware
 	stty -F $(PORT) raw 9600
 	cat $(PORT)
 
