@@ -16,6 +16,7 @@ You'll need `arduino-cli` and `make` to compile the project.
 - `make flash`: flashes the built binaries (it likes to rebuild them first though… TODO: fix that)
 - `make debug`: opens the serial port for you to look at what the board has to say
 - `make clean`: cleans the build directory
+- `make detect-hardware`: prints information about the detected board, if any.
 
 ## Contributing
 
@@ -37,7 +38,7 @@ Also ask me before starting to work on your PR, to avoid unnecessary work in cas
 ### The board isn't recognized.
 
 Make sure the board is connected and that you have the appropriate drivers. Then try rebooting, that worked for me.
-Also, check if the Makefile has the correct port configured. (TODO: replace with automatic port detection & remove this message)
+If the Makefile is detecting your board incorrectly, you can try setting the environment variable `BOARDLIST` to `"/port/path arduino:board:name"`.
 
 ### I don't have the necessary permissions. Should I flash with sudo?
 

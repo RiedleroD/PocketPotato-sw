@@ -1,20 +1,36 @@
-.PHONY: all debug build flash clean fresh tests prepare
+.PHONY: all debug build flash clean fresh tests prepare detect-hardware
 
-#full qualifying board name (see `arduino-cli board search` for all boards)
-BOARD = "arduino:avr:nano"
 #external libraries (external to arduino-cli, at least)
 LIBS = "./external/GyverButton/"
-#port the arduino is connected to. TODO: remove and replace with `arduino-cli board list`
-PORT = /dev/ttyUSB0
+
+$(info getting boards)
+#sets BOARD and PORT to hopefully correct values
+#for reference, here are some valid BOARDLIST examples:
+#/dev/cu.usbmodem14101             serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
+BOARDLIST ?= $(shell arduino-cli board list | grep "arduino:avr" | tail -f -n 1 -)
+ifeq ($(BOARDLIST),)
+    $(info trying again with a more lenient query)
+    BOARDLIST = $(shell arduino-cli board list | tail -f -n 1 -)
+endif
+ifneq ($(BOARDLIST),No boards found.)
+    PORT := $(firstword $(BOARDLIST))
+    BOARD := $(filter arduino:avr:% , $(BOARDLIST))
+    ifeq ($(BOARD),)
+        $(warning could not determine board type, assuming arduino nano)
+        BOARD := "arduino:avr:nano"
+    endif
+else
+    PORT := ""
+endif
 
 all : | flash debug
 debug :
 	stty -F $(PORT) raw 9600
 	cat $(PORT)
 
-flash : build
+flash : | detect-hardware build
 	arduino-cli upload -i "./build/arduino.avr.nano/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
-build :
+build : detect-hardware
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
 #tests :	# TODO: make test cases
 #	echo "generate test binaries"
@@ -24,3 +40,13 @@ clean :
 prepare :
 	arduino-cli core install arduino:avr
 	arduino-cli lib install "Adafruit SSD1306"
+
+detect-hardware :
+	@#echo "$(BOARDLIST)"
+	@if [ "$(BOARDLIST)" == "No boards found." ]; then\
+		echo "No boards found to be connected."; \
+		exit 1; \
+	fi
+	@echo "using port $(PORT)"
+	@echo "and board $(BOARD)"
+	@echo ""
