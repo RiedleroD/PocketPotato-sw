@@ -37,7 +37,7 @@ void setup() {
   left.setStepTimeout(STEP_TIMEOUT);
   right.setStepTimeout(STEP_TIMEOUT);
 
-
+  loadSettings();
 
   display.setTextSize(1);//config text
   display.setTextColor(SSD1306_WHITE);
@@ -57,7 +57,9 @@ void loop() {
   else if (up.isClick() || up.isStep())
     menu = constrain(menu - 1, 0, appcount - 1);  // Up - prev.
   else if (left.isClick()) { // Settings
-    // ...
+    beginGame();
+    showSettings();
+    endGame();
   }
   else if (right.isClick() || sh_r.isClick()) { // Start app
     beginGame();

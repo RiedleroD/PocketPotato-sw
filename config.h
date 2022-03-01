@@ -22,6 +22,7 @@
 // ---------- EEPROM ADDRESSES ----------
 
 #define ADR_TESTSCORE 0
+#define ADR_BRIGHTNESS 1
 
 // ---------- APPS ----------
 
