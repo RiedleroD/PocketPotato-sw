@@ -73,3 +73,14 @@ void drawMenu() {
 	drawTexture(1,menu*10,arrow,5,9);
 	display.display();
 }
+
+//to reset everything to how games usually want it
+void beginGame(){
+	display.clearDisplay();
+	display.setCursor(0, 0);
+}
+
+//to set everything to how the menu wants it
+void endGame(){
+	display.clearDisplay();
+}

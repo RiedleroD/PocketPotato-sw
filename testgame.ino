@@ -1,5 +1,4 @@
 void gameTest() {
-	display.clearDisplay();
 	uint8_t x = 0;
 	uint8_t y = 0;
 	unsigned long nextPrint = 0;

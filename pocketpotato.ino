@@ -22,9 +22,6 @@ void setup() {
   Serial.begin(9600);
   Serial.println(F("called setup()"));
 
-  pinMode(2, OUTPUT);
-  digitalWrite(2, LOW);
-
   SPI.begin();
 
   up.setTickMode(AUTO); // Automatically check button status
@@ -63,6 +60,7 @@ void loop() {
     // ...
   }
   else if (right.isClick() || sh_r.isClick()) { // Start app
+    beginGame();
     switch(menu) {
       case 0:
         testButtons();
@@ -71,6 +69,7 @@ void loop() {
         gameTest();
         break;
     }
+    endGame();
   }
   drawMenu();
   display.display();
