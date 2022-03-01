@@ -19,6 +19,10 @@
 #define HOLD_TIMEOUT 300
 #define STEP_TIMEOUT 50
 
+// ---------- EEPROM ADDRESSES ----------
+
+#define ADR_TESTSCORE 0
+
 // ---------- APPS ----------
 
 const char _app1[] PROGMEM = "Controller Test";

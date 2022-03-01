@@ -37,7 +37,7 @@ void setup() {
   left.setStepTimeout(STEP_TIMEOUT);
   right.setStepTimeout(STEP_TIMEOUT);
 
-  
+
 
   display.setTextSize(1);//config text
   display.setTextColor(SSD1306_WHITE);
@@ -68,6 +68,8 @@ void loop() {
       case 1:
         gameTest();
         break;
+	  case 2:
+	  	eepromtest();
     }
     endGame();
   }
