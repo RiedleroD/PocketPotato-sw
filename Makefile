@@ -9,40 +9,45 @@ ifeq ($(OS),Windows_NT)
 else
   UNAME_S := $(shell uname -s)
   ifeq ($(UNAME_S),Linux)
-    STTY_F=f
+    STTY_F=F
   endif
   ifeq ($(UNAME_S),Darwin)
-    STTY_F=F
+    STTY_F=f
   endif
 endif
 
 
-$(info getting boards)
 #sets BOARD and PORT to hopefully correct values
 #for reference, here are some valid BOARDLIST examples:
 #/dev/cu.usbmodem14101             serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
-BOARDLIST ?= $(shell arduino-cli board list | grep "arduino:avr" | tail -f -n 1)
-ifeq ($(BOARDLIST),)
-    $(info trying again with a more lenient query)
-    BOARDLIST = $(shell arduino-cli board list | grep "/")
-endif
-ifneq ($(BOARDLIST),No boards found.)
-    PORT := $(firstword $(BOARDLIST))
-    BOARD := $(filter arduino:avr:% , $(BOARDLIST))
-    ifeq ($(BOARD),)
-        $(warning could not determine board type, assuming arduino nano)
-        BOARD := "arduino:avr:nano"
+ifneq ($(MAKECMDGOALS),clean)
+    $(info getting boards)
+    ifndef BOARDLIST
+        ALLBOARDS := $(shell printf %q "$$(arduino-cli board list)")
+        BOARDLIST := $(shell printf %b "$(ALLBOARDS)" | grep "arduino:avr" | tail -f -n 1)
+        ifeq ($(BOARDLIST),)
+            $(info trying again with a more lenient query)
+            BOARDLIST := $(shell printf %b "$(ALLBOARDS)" | grep "/")
+        endif
     endif
-    ifeq ($(PORT),)
-        $(error could not determine board from line: $(BOARDLIST))
+    ifneq ($(BOARDLIST),No boards found.)
+        PORT := $(firstword $(BOARDLIST))
+        BOARD := $(filter arduino:avr:% , $(BOARDLIST))
+        ifeq ($(BOARD),)
+            $(warning could not determine board type, assuming arduino nano)
+            BOARD := "arduino:avr:nano"
+        endif
+        ifeq ($(PORT),)
+            $(error could not determine port from line: $(BOARDLIST))
+        endif
+    else
+        PORT := ""
     endif
-else
-    PORT := ""
 endif
 
 all : | flash debug
 debug : detect-hardware
-	stty $(STTY_F) $(PORT) raw 9600
+	stty -$(STTY_F) $(PORT) raw 9600
 	cat $(PORT)
 
 flash : | detect-hardware build
@@ -59,7 +64,7 @@ prepare :
 	arduino-cli lib install "Adafruit SSD1306"
 
 detect-hardware :
-	@echo "$(BOARDLIST)"
+	@#echo "$(BOARDLIST)"
 	@if [ "$(BOARDLIST)" == "No boards found." ]; then\
 		echo "No boards found to be connected."; \
 		exit 1; \
