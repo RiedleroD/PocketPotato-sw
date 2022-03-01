@@ -19,9 +19,9 @@ void showSettings(){
 			}else if(curItem<SETTINGS_LAST_INDEX){
 				--curItem;
 			}
-		}else if(right.isClick() || r_sh.isClick()){
+		}else if(right.isClick() || SH_R.isClick()){
 			isSelected=!isSelected;
-		}else if (left.isClick() || l_sh.isClick()){
+		}else if (left.isClick() || SH_L.isClick()){
 			if(isSelected)
 				isSelected=false;
 			else{
