@@ -7,10 +7,10 @@ $(info getting boards)
 #sets BOARD and PORT to hopefully correct values
 #for reference, here are some valid BOARDLIST examples:
 #/dev/cu.usbmodem14101             serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
-BOARDLIST ?= $(shell arduino-cli board list | grep "arduino:avr" | tail -f -n 2 - | head -n 1)
+BOARDLIST ?= $(shell arduino-cli board list | grep "arduino:avr" | tail -f -n 1 -)
 ifeq ($(BOARDLIST),)
     $(info trying again with a more lenient query)
-    BOARDLIST = $(shell arduino-cli board list | tail -f -n 1 -)
+    BOARDLIST = $(shell arduino-cli board list | grep "/")
 endif
 ifneq ($(BOARDLIST),No boards found.)
     PORT := $(firstword $(BOARDLIST))
@@ -18,6 +18,9 @@ ifneq ($(BOARDLIST),No boards found.)
     ifeq ($(BOARD),)
         $(warning could not determine board type, assuming arduino nano)
         BOARD := "arduino:avr:nano"
+    endif
+    ifeq ($(PORT),)
+        $(error could not determine board from line: $(BOARDLIST))
     endif
 else
     PORT := ""
@@ -42,7 +45,7 @@ prepare :
 	arduino-cli lib install "Adafruit SSD1306"
 
 detect-hardware :
-	@#echo "$(BOARDLIST)"
+	@echo "$(BOARDLIST)"
 	@if [ "$(BOARDLIST)" == "No boards found." ]; then\
 		echo "No boards found to be connected."; \
 		exit 1; \
