@@ -5,15 +5,17 @@
 void testButtons() {
 	while (true) {
 		if (down.isClick() || down.isStep())
-			display.print("DOWN");
+			display.print("D");
 		else if (up.isClick() || up.isStep())
-			display.print("UP");
-		else if (left.isClick()) {
-			display.print("LEFT");
-		}
-		else if (right.isClick() || sh_r.isClick()) {
-			display.print("RIGHT");
-		}
+			display.print("U");
+		else if (left.isClick())
+			display.print("L");
+		else if (right.isClick())
+			display.print("R");
+		else if (sh_r.isClick())
+			display.print("RS");
+		else if (sh_l.isClick())
+			display.print("LS");
 		display.display();
 		
 		if(up.isHold() && down.isHold()) {
