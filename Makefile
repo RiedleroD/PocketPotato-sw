@@ -9,10 +9,10 @@ ifeq ($(OS),Windows_NT)
 else
   UNAME_S := $(shell uname -s)
   ifeq ($(UNAME_S),Linux)
-    STTY_F=F
+    STTY_F=f
   endif
   ifeq ($(UNAME_S),Darwin)
-    STTY_F=f
+    STTY_F=F
   endif
 endif
 
