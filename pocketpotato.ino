@@ -37,8 +37,6 @@ void setup() {
   left.setStepTimeout(STEP_TIMEOUT);
   right.setStepTimeout(STEP_TIMEOUT);
 
-  loadSettings();
-
   display.setTextSize(1);//config text
   display.setTextColor(SSD1306_WHITE);
   display.cp437(true);
@@ -47,7 +45,7 @@ void setup() {
   display.clearDisplay();
   showLogo();
 
-  checkEEPROM();// Check and load EEPROM values.
+  loadSettings();//load settings from EEPROM
   Serial.println(F("entering loop()"));
 }
 

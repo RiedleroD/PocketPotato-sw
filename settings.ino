@@ -9,6 +9,7 @@ void showSettings(){
 			if(isSelected){
 				if(curItem==0)
 					++new_brightness;
+				setBrightness(new_brightness);
 			}else if(curItem<SETTINGS_LAST_INDEX){
 				++curItem;
 			}
@@ -16,12 +17,13 @@ void showSettings(){
 			if(isSelected){
 				if(curItem==0)
 					--new_brightness;
+				setBrightness(new_brightness);
 			}else if(curItem<SETTINGS_LAST_INDEX){
 				--curItem;
 			}
-		}else if(right.isClick() || SH_R.isClick()){
+		}else if(right.isClick() || sh_r.isClick()){
 			isSelected=!isSelected;
-		}else if (left.isClick() || SH_L.isClick()){
+		}else if (left.isClick() || sh_l.isClick()){
 			if(isSelected)
 				isSelected=false;
 			else{
@@ -43,5 +45,5 @@ void showSettings(){
 }
 
 void loadSettings(){
-	//TODO: dim
+	setBrightness(EEPROM.read(ADR_BRIGHTNESS));
 }

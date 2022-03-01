@@ -1,20 +1,15 @@
-void checkEEPROM() {
-	//TODO: re-make EEPROM stuff
-}
-
 void showLogo() { // show logo with (bad) fade-in and -out
-	//TODO: find a way to properly dim again
-	display.dim(true);
+	setBrightness(0);
 	drawTexture(0, 0, logo, 128,64);
 	display.display();
-	_delay_ms(125);
-	display.dim(false);
-	_delay_ms(750);
-	display.dim(true);
-	_delay_ms(125);
+	//will delay for about 500ms
+	for(uint8_t i=1;i!=0;++i){
+		setBrightness(i);
+		_delay_ms(2);
+	}
 	display.clearDisplay();
 	display.display();
-	display.dim(false);
+	_delay_ms(100);
 }
 
 /*!
@@ -83,4 +78,15 @@ void beginGame(){
 //to set everything to how the menu wants it
 void endGame(){
 	display.clearDisplay();
+}
+
+//0 is completely dark and 255 is completely bright
+void setBrightness(uint8_t amount){
+	SPI.beginTransaction(SPISettings(8000000UL,MSBFIRST,SPI_MODE0));
+	digitalWrite(OLED_CS, LOW);
+	digitalWrite(OLED_DC, LOW);
+	SPI.transfer(SSD1306_SETCONTRAST);
+	SPI.transfer(amount);
+	digitalWrite(OLED_CS, HIGH);
+	SPI.endTransaction();
 }
