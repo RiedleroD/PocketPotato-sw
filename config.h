@@ -8,8 +8,8 @@
 #define SH_R 7
 #define SH_L 2
 //display control pins
-#define OLED_MOSI  13
-#define OLED_CLK   11
+#define OLED_MOSI  11
+#define OLED_CLK   13
 #define OLED_DC    9
 #define OLED_CS    8
 #define OLED_RESET 10
