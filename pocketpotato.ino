@@ -63,6 +63,7 @@ void loop() {
     // ...
   }
   else if (right.isClick() || sh_r.isClick()) { // Start app
+    beginGame();
     switch(menu) {
       case 0:
         testButtons();
@@ -71,6 +72,7 @@ void loop() {
         gameTest();
         break;
     }
+    endGame();
   }
   drawMenu();
   display.display();

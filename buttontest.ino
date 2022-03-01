@@ -3,8 +3,6 @@
  */
 
 void testButtons() {
-  display.clearDisplay();
-  display.setCursor(0, 0);
   while (true) {
     if (down.isClick() || down.isStep())
       display.print("DOWN");
