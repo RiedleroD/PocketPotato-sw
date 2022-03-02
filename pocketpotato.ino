@@ -18,6 +18,8 @@ GButton sh_r(SH_R);
 GButton sh_l(SH_L);
 uint8_t menu = 0;
 
+#include "games/games.cpp"
+
 void setup() {
   Serial.begin(9600);
   Serial.println(F("called setup()"));
