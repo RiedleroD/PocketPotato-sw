@@ -15,9 +15,9 @@ namespace snake{
 	void game(){
 		//the data stored for one part is just the direction the part is offset to, relative to the previous part.
 		//00→left, 01→top, 10→right, 11→bottom
-		//one part = 2 bits → 16 bytes = 64 parts
+		//one part = 2 bits → 32 bytes = 512 parts
 		//TODO: should expand to a greater size if needed
-		uint8_t partsLen=16;
+		const uint8_t partsLen=32;
 		uint8_t parts[partsLen] = {};
 		//technically it's the amount of parts including the head part.
 		uint8_t partAmnt = 3;
@@ -117,14 +117,12 @@ namespace snake{
 				setPart(partOffset,direction);
 			}
 			//apple collision & regeneration
-			if(((curCoords[0] == appleCoords[0]) && ((curCoords[1] & 0b00111111) == appleCoords[1])) || sh_l.isClick()){
+			if(((curCoords[0] == appleCoords[0]) && ((curCoords[1] & 0b00111111) == appleCoords[1]))){
 				//regenerate apple
 				appleCoords[0]=1+random(126);
 				appleCoords[1]=1+random(62);
 				//add one length
 				++partAmnt;
-				//set last part to pre-past part
-				//setPart(partOffset+partAmnt,getPart(partOffset+partAmnt-1));
 			}
 			//speed
 			_delay_ms(20);
