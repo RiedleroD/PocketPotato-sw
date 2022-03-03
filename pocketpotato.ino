@@ -72,6 +72,10 @@ void loop() {
         break;
 	  case 2:
 	  	eepromtest();
+        break;
+      case 3:
+        snake::game();
+        break;
     }
     endGame();
   }
