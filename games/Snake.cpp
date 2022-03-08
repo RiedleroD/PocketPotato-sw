@@ -145,4 +145,7 @@ namespace snake{
 			}
 		}
 	}
+	#undef getBlock
+	#undef getPart
+	#undef setPart
 }
