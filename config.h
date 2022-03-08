@@ -24,6 +24,8 @@
 #define ADR_TESTSCORE 0
 #define ADR_BRIGHTNESS 1
 
+#define ADR_SNAKESCORE 16 // 16 bits!
+
 // ---------- APPS ----------
 
 const char _app1[] PROGMEM = "Controller Test";
