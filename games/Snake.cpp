@@ -12,12 +12,6 @@ namespace snake{
 									| (value << \
 										(6-getPartMaskOffset(index)) \
 									  )
-	void drawZoomedPixel(uint8_t x,uint8_t y,uint8_t zoom){
-		zoom=1<<(zoom-1);//converting zoom to pixels drawn
-		for(uint8_t i=0;i<zoom;++i)
-			for(uint8_t j=0;j<zoom;++j)
-				display.drawPixel(i+x*zoom,j+y*zoom,SSD1306_WHITE);
-	}
 	void game(){
 		//zoom - TODO: settable in game menu
 		const uint8_t zoom = 3;

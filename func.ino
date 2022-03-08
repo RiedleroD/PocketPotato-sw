@@ -54,6 +54,19 @@ void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const
 	display.endWrite();
 }
 
+/*!
+ * Draws a Pixel with scaling
+ * @param x the x-coordinate - gets handled as the top left corner of the zoomed pixel
+ * @param y same as x
+ * @param zoom the scaling factor - scales like 1x1 2x2 4x4 8x8 etc. - zoom of 0 is UB
+ */
+void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom){
+	zoom=1<<(zoom-1);//converting zoom to pixels drawn
+	for(uint8_t i=0;i<zoom;++i)
+		for(uint8_t j=0;j<zoom;++j)
+			display.drawPixel(i+x*zoom,j+y*zoom,SSD1306_WHITE);
+}
+
 void drawMenu() {
 	char arrayBuf[16];  // Buffer for menu item
 	display.clearDisplay();
