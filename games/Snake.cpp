@@ -30,8 +30,12 @@ namespace snake{
 		uint8_t curCoords[2] = {63,31};
 		//setting initial apple coords so that they will be regenerated immediately
 		uint8_t appleCoords[2] = {62,31};
+		//speed will be set by a menu eventually - goes from 1 to 10
+		uint8_t speed = 5;
+		uint32_t t1;
 		//I use blocks here to eliminate temporary variables when they're not needed anymore
 		while(true){
+			t1 = millis();
 			//drawing snake + tail-related collision detection
 			{
 				display.clearDisplay();
@@ -124,8 +128,15 @@ namespace snake{
 				//add one length
 				++partAmnt;
 			}
-			//speed
-			_delay_ms(20);
+			//throttle frametime to set speed
+			while((millis()-t1)<(60-5*speed)){
+				up.tick();
+				down.tick();
+				left.tick();
+				right.tick();
+				sh_r.tick();
+				sh_l.tick();
+			}
 		}
 	}
 }
