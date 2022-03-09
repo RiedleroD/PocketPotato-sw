@@ -12,6 +12,9 @@ namespace snake{
 									| (value << \
 										(6-getPartMaskOffset(index)) \
 									  )
+	inline uint16_t getScore(uint8_t partAmnt,uint8_t speed,uint8_t zoom){
+		return (partAmnt-3)*speed/(1 << (zoom-1));
+	}
 	void game(){
 		//zoom - TODO: settable in game menu
 		const uint8_t zoom = 3;
@@ -39,6 +42,10 @@ namespace snake{
 		//speed will be set by a menu eventually - goes from 1 to 10
 		const uint8_t speed = 5;
 		uint32_t t1;
+		//setting color to invert what's behind it
+		display.setTextColor(SSD1306_INVERSE);
+		//boolean to signal when you died
+		bool dead = false;
 		//I use blocks here to eliminate temporary variables when they're not needed anymore
 		while(true){
 			t1 = millis();
@@ -72,8 +79,7 @@ namespace snake{
 					//collision detection
 					if((curX == curCoords[0]) && (curY == (curCoords[1]&coordMask1))){
 						//dieing if colliding with head
-						_delay_ms(500);
-						return;//DIE
+						dead = true;
 					}else if((curX == appleCoords[0]) && (curY == appleCoords[1])){
 						//regenerating apple if colliding with it
 						appleCoords[0]=1+random((0b10000000 >> zoom) -2);
@@ -83,6 +89,31 @@ namespace snake{
 			}
 			//drawing apple
 			drawZoomedPixel(appleCoords[0],appleCoords[1],zoom);
+			//score/highscore stuff + dieing
+			{
+				//drawing score
+				display.setCursor(0,0);
+				display.print(F("Score: "));
+				uint16_t score = getScore(partAmnt,speed,zoom);
+				display.print(score);
+				//ending game if appropriate
+				if(dead){
+					uint16_t hiscore;
+					EEPROM.get(ADR_SNAKESCORE,hiscore);
+					Serial.print(score);
+					Serial.print(' ');
+					Serial.println(hiscore);
+					if(hiscore<score){//checking for highscore
+						display.setCursor(34,32);//centered text
+						display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);//overwrites background
+						display.print(F("HIGHSCORE!"));
+						display.display();
+						EEPROM.put(ADR_SNAKESCORE,score);
+					}
+					_delay_ms(500);
+					return;//DIE
+				}
+			}
 			//flipping display
 			display.display();
 			//movement

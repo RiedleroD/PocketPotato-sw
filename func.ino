@@ -91,6 +91,7 @@ void beginGame(){
 //to set everything to how the menu wants it
 void endGame(){
 	display.clearDisplay();
+	display.setTextColor(SSD1306_WHITE);
 }
 
 //0 is completely dark and 255 is completely bright
