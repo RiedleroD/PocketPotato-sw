@@ -16,9 +16,10 @@ GButton left(BTN_LEFT);
 GButton right(BTN_RIGHT);
 GButton sh_r(SH_R);
 GButton sh_l(SH_L);
-uint8_t menu = 0;
+//uint8_t menu = 0;
 
 #include "games/games.cpp"
+#include "util/menu.cpp"
 
 void setup() {
   Serial.begin(9600);
@@ -52,7 +53,7 @@ void setup() {
 }
 
 void loop() {
-  if (down.isClick() || down.isStep())
+  /**if (down.isClick() || down.isStep())
     menu = constrain(menu + 1, 0, appcount - 1); // Down - next menu item
   else if (up.isClick() || up.isStep())
     menu = constrain(menu - 1, 0, appcount - 1);  // Up - prev.
@@ -80,5 +81,6 @@ void loop() {
     endGame();
   }
   drawMenu();
-  display.display();
+  display.display();*/
+  menu::draw();
 }
