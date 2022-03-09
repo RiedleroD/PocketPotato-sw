@@ -12,12 +12,21 @@ namespace snake{
 									| (value << \
 										(6-getPartMaskOffset(index)) \
 									  )
+	inline uint16_t getScore(uint8_t partAmnt,uint8_t speed,uint8_t zoom){
+		return (partAmnt-3)*speed/(1 << (zoom-1));
+	}
 	void game(){
+		//zoom - TODO: settable in game menu
+		const uint8_t zoom = 3;
+		//clamping coords to half of previous each zoom step
+		const uint8_t coordMask = 0xFF >> zoom;
+		const uint8_t coordMask1= coordMask >> 1;
 		//the data stored for one part is just the direction the part is offset to, relative to the previous part.
 		//00→left, 01→top, 10→right, 11→bottom
 		//one part = 2 bits → 32 bytes = 512 parts
+		//less parts are needed on greater zoom levels: 1→512, 2→256, 3→128
 		//TODO: should expand to a greater size if needed
-		const uint8_t partsLen=32;
+		const uint8_t partsLen=64/(1 << (zoom-1));
 		uint8_t parts[partsLen] = {};
 		//technically it's the amount of parts including the head part.
 		uint8_t partAmnt = 3;
@@ -27,52 +36,84 @@ namespace snake{
 		//first coord is the X coordinate (taking 7 bits, max value=127)
 		//second coord is the Y coordinate (taking 6 bits, max value=63) and the direction (taking 2 bits)
 		//I could possibly merge this into one uint16_t, but idk which variant is faster.
-		uint8_t curCoords[2] = {63,31};
+		uint8_t curCoords[2] = {(128 >> zoom)-1,(64 >> zoom)-1};
 		//setting initial apple coords so that they will be regenerated immediately
-		uint8_t appleCoords[2] = {62,31};
+		uint8_t appleCoords[2] = {(128 >> zoom)-2,(64 >> zoom)-1};
+		//speed will be set by a menu eventually - goes from 1 to 10
+		const uint8_t speed = 5;
+		uint32_t t1;
+		//setting color to invert what's behind it
+		display.setTextColor(SSD1306_INVERSE);
+		//boolean to signal when you died
+		bool dead = false;
 		//I use blocks here to eliminate temporary variables when they're not needed anymore
 		while(true){
+			t1 = millis();
 			//drawing snake + tail-related collision detection
 			{
 				display.clearDisplay();
 				uint8_t curX=curCoords[0];
-				uint8_t curY=curCoords[1] & 0b00111111;
+				uint8_t curY=curCoords[1] & coordMask1;
 				for(uint8_t curI=partOffset;curI<(partOffset+partAmnt);++curI){
 					//drawing the part
-					display.drawPixel(curX,curY,SSD1306_WHITE);
+					drawZoomedPixel(curX,curY,zoom);
 					//getting the next part
 					switch(getPart(curI)){
 						case 0b00://left
 							--curX;
-							curX &= 0b01111111;
+							curX &= coordMask;
 							break;
 						case 0b01://top
 							--curY;
-							curY &= 0b00111111;
+							curY &= coordMask1;
 							break;
 						case 0b10://right
 							++curX;
-							curX &= 0b01111111;
+							curX &= coordMask;
 							break;
 						case 0b11://bottom
 							++curY;
-							curY &= 0b00111111;
+							curY &= coordMask1;
 							break;
 					}
 					//collision detection
-					if((curX == curCoords[0]) && (curY == (curCoords[1]&0b00111111))){
+					if((curX == curCoords[0]) && (curY == (curCoords[1]&coordMask1))){
 						//dieing if colliding with head
-						_delay_ms(500);
-						return;//DIE
+						dead = true;
 					}else if((curX == appleCoords[0]) && (curY == appleCoords[1])){
 						//regenerating apple if colliding with it
-						appleCoords[0]=1+random(126);
-						appleCoords[1]=1+random(62);
+						appleCoords[0]=1+random((0b10000000 >> zoom) -2);
+						appleCoords[1]=1+random((0b01000000 >> zoom) -2);
 					}
 				}
 			}
 			//drawing apple
-			display.drawPixel(appleCoords[0],appleCoords[1],SSD1306_WHITE);
+			drawZoomedPixel(appleCoords[0],appleCoords[1],zoom);
+			//score/highscore stuff + dieing
+			{
+				//drawing score
+				display.setCursor(0,0);
+				display.print(F("Score: "));
+				uint16_t score = getScore(partAmnt,speed,zoom);
+				display.print(score);
+				//ending game if appropriate
+				if(dead){
+					uint16_t hiscore;
+					EEPROM.get(ADR_SNAKESCORE,hiscore);
+					Serial.print(score);
+					Serial.print(' ');
+					Serial.println(hiscore);
+					if(hiscore<score){//checking for highscore
+						display.setCursor(34,32);//centered text
+						display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);//overwrites background
+						display.print(F("HIGHSCORE!"));
+						display.display();
+						EEPROM.put(ADR_SNAKESCORE,score);
+					}
+					_delay_ms(500);
+					return;//DIE
+				}
+			}
 			//flipping display
 			display.display();
 			//movement
@@ -93,19 +134,19 @@ namespace snake{
 				switch(direction){
 					case 0b00://right
 						// (decreasing coordinate) % clamp coordinate
-						curCoords[0] = (curCoords[0]+1) & 0b01111111;
-						curCoords[1] &= 0b00111111;
+						curCoords[0] = (curCoords[0]+1) & coordMask;
+						curCoords[1] &= coordMask1;
 						break;
 					case 0b01://bottom
 						// (bitmasking direction) | (bitmasking and decreasing coordinate)
-						curCoords[1] = (direction << 6) | ((curCoords[1]+1) & 0b00111111);
+						curCoords[1] = (direction << 6) | ((curCoords[1]+1) & coordMask1);
 						break;
 					case 0b10://left
-						curCoords[0] = (curCoords[0]-1) & 0b01111111;
-						curCoords[1] = (curCoords[1] & 0b00111111) | 0b10000000;
+						curCoords[0] = (curCoords[0]-1) & coordMask;
+						curCoords[1] = (curCoords[1] & coordMask1) | 0b10000000;
 						break;
 					case 0b11://top
-						curCoords[1] = (direction << 6) | ((curCoords[1]-1) & 0b00111111);
+						curCoords[1] = (direction << 6) | ((curCoords[1]-1) & coordMask1);
 						break;
 				}
 				//moving parts
@@ -117,15 +158,25 @@ namespace snake{
 				setPart(partOffset,direction);
 			}
 			//apple collision & regeneration
-			if(((curCoords[0] == appleCoords[0]) && ((curCoords[1] & 0b00111111) == appleCoords[1]))){
+			if(((curCoords[0] == appleCoords[0]) && ((curCoords[1] & coordMask1) == appleCoords[1]))){
 				//regenerate apple
-				appleCoords[0]=1+random(126);
-				appleCoords[1]=1+random(62);
+				appleCoords[0]=1+random((0b10000000 >> zoom) -2);
+				appleCoords[1]=1+random((0b01000000 >> zoom) -2);
 				//add one length
 				++partAmnt;
 			}
-			//speed
-			_delay_ms(20);
+			//throttle frametime to set speed
+			while((millis()-t1)<(60-5*speed)){
+				up.tick();
+				down.tick();
+				left.tick();
+				right.tick();
+				sh_r.tick();
+				sh_l.tick();
+			}
 		}
 	}
+	#undef getBlock
+	#undef getPart
+	#undef setPart
 }
