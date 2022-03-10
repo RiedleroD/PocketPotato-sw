@@ -1,43 +1,37 @@
-//extern void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height);
-
 namespace menu{
-	void draw() {
+	uint8_t draw(const char* const texts[], uint8_t length) {
 		uint8_t select = 0;
-		//const char texts[][20] = {"jahwe", "Cheesus", "jod", "readler", "sehrgey", "stainberger", "pushmän", "ceeplusplus", "käbab"};
-		const uint8_t maxIndex = 8;
+		//the maxIndex has to be calculated from a parameter as for some reason
+		//arrays change their length when passed as parameters. this is the best
+		//solution as i care about my sanity and i dont want to spend 5 hours
+		//on this. good luck.
+		const uint8_t maxIndex = length - 1;
 
 		while(true) {
 			//moving of index
 			if(up.isClick() || up.isStep())
-				if(--select < 0)
+				if(--select > maxIndex + 1) //detects an unsigned int underflow
 					select = maxIndex;
 			if(down.isClick() || down.isStep())
 				if(++select > maxIndex)
 					select = 0;
 
+			//activate option.
+			if(right.isClick())
+				return select;
+
 			//drawing of menu
 			display.clearDisplay();
-			for(uint8_t index = 0; index < 6; index++) {
+			char arrayBuf[16];
+			for(uint8_t index = 0; index < 6 && index <= maxIndex; index++) { //TODO: check for null
 				display.setCursor(10, 10 * index);
-				display.print("texts[index]");
+				//adds 6 to the index for every page
+				strcpy_P(arrayBuf, pgm_read_word(&(texts[index + (select/6 * 6)])));
+				display.print(arrayBuf);
+				//printFromFlash(texts[index + (select/6 * 6)]);
 			}
-			drawTexture(1, select * 10, arrow, 5, 9);
+			drawTexture(1, (select%6) * 10, arrow, 5, 9);
 			display.display();
 		}
 	}
-
-	/*void drawedMenu() {
-		char arrayBuf[16];  // Buffer for menu item
-		display.clearDisplay();
-		for(uint8_t curApp=0;curApp<appcount;++curApp){
-			//copy current app name into buffer
-			strcpy_P(arrayBuf, pgm_read_word(&(apps[curApp])));
-			//write current app name to screen
-			display.setCursor(10,curApp*10);
-			display.print(arrayBuf);
-		}
-		//write arrow
-		drawTexture(1,menu*10,arrow,5,9);
-		display.display();
-	}*/
 }

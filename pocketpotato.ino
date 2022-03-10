@@ -16,7 +16,6 @@ GButton left(BTN_LEFT);
 GButton right(BTN_RIGHT);
 GButton sh_r(SH_R);
 GButton sh_l(SH_L);
-//uint8_t menu = 0;
 
 #include "games/games.cpp"
 #include "util/menu.cpp"
@@ -53,34 +52,31 @@ void setup() {
 }
 
 void loop() {
-  /**if (down.isClick() || down.isStep())
-    menu = constrain(menu + 1, 0, appcount - 1); // Down - next menu item
-  else if (up.isClick() || up.isStep())
-    menu = constrain(menu - 1, 0, appcount - 1);  // Up - prev.
-  else if (left.isClick()) { // Settings
-    beginGame();
-    showSettings();
-    endGame();
-  }
-  else if (right.isClick() || sh_r.isClick()) { // Start app
-    beginGame();
-    switch(menu) {
-      case 0:
-        testButtons();
-        break;
-      case 1:
-        gameTest();
-        break;
-	  case 2:
-	  	eepromtest();
-        break;
-      case 3:
-        snake::game();
-        break;
-    }
-    endGame();
-  }
-  drawMenu();
-  display.display();*/
-  menu::draw();
+	//uint8_t zahl = menu::draw(testArr, testLen);
+	Serial.println(appcount);
+
+	uint8_t select = menu::draw(apps, appcount);
+
+	beginGame();
+	switch (select) {
+		case 0:
+			testButtons();
+			break;
+		case 1:
+			gameTest();
+			break;
+		case 2:
+			eepromtest();
+			break;
+		case 3:
+			snake::game();
+			break;
+		case 4:
+			showSettings();
+			break;
+		case 5:
+			Serial.print("oof");
+			break;
+	}
+	endGame();
 }
