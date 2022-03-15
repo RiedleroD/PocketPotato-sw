@@ -180,6 +180,21 @@ namespace snake{
 			}
 		}
 	}
+	void showScore(){
+		display.clearDisplay();
+		display.setCursor(10,27);
+		display.print(F("Highscore: "));
+		{
+			const uint16_t hiscore;
+			EEPROM.get(ADR_SNAKESCORE,hiscore);
+			display.print(hiscore);
+		}
+		display.display();
+		while(true){
+			if(left.isClick() || sh_l.isClick())
+				break;
+		}
+	}
 	void run(){
 		while(true){
 			switch(menu::draw(menus,menucount)){
@@ -187,7 +202,7 @@ namespace snake{
 					game(2,5);
 					break;
 				case 1:
-					//TODO: show score
+					showScore();
 					break;
 				case 2:
 					//TODO: show manual
