@@ -10,7 +10,7 @@ namespace menu{
 		while(true) {
 			//moving of index
 			if(up.isClick() || up.isStep())
-				if(--select > maxIndex + 1) //detects an unsigned int underflow
+				if(--select > maxIndex + 1) //detects an unsigned int overflow
 					select = maxIndex;
 			if(down.isClick() || down.isStep())
 				if(++select > maxIndex)
@@ -22,11 +22,11 @@ namespace menu{
 
 			//drawing of menu
 			display.clearDisplay();
-			char arrayBuf[16];
-			for(uint8_t index = 0; index < 6 && index <= maxIndex; index++) { //TODO: check for null
+			char arrayBuf[32];
+			for(uint8_t index = 0; index < 6 && index + (select/6 * 6) <= maxIndex; index++) {
 				display.setCursor(10, 10 * index);
 				//adds 6 to the index for every page
-				strcpy_P(arrayBuf, pgm_read_word(&(texts[index + (select/6 * 6)])));
+				strcpy_P(arrayBuf, (char*) pgm_read_word(&(texts[index + (select/6 * 6)])));
 				display.print(arrayBuf);
 				//printFromFlash(texts[index + (select/6 * 6)]);
 			}

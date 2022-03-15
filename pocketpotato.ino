@@ -52,9 +52,6 @@ void setup() {
 }
 
 void loop() {
-	//uint8_t zahl = menu::draw(testArr, testLen);
-	Serial.println(appcount);
-
 	uint8_t select = menu::draw(apps, appcount);
 
 	beginGame();
@@ -73,9 +70,6 @@ void loop() {
 			break;
 		case 4:
 			showSettings();
-			break;
-		case 5:
-			Serial.print("oof");
 			break;
 	}
 	endGame();

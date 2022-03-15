@@ -95,3 +95,5 @@ void setBrightness(uint8_t amount){
 	digitalWrite(OLED_CS, HIGH);
 	SPI.endTransaction();
 }
+
+//TODO: add printFromFlash (see in menu.cpp)
