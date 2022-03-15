@@ -7,6 +7,8 @@ namespace snake{
 	const char* const menus[] PROGMEM = {_menu0,_menu1,_menu2,_menu3};
 	const int menucount PROGMEM = sizeof(menus)/sizeof(char*);
 	
+	const char manual[] PROGMEM = "Collect the apples and get longer without colliding with yourself.\n\nUP+DOWN closes the game.";
+	
 	uint8_t getPartMaskOffset(uint8_t index){
 		return 2*(index%4);
 	}
@@ -195,6 +197,18 @@ namespace snake{
 				break;
 		}
 	}
+	void showManual(){
+		display.clearDisplay();
+		display.setCursor(0,0);
+		for (uint16_t i=0;i < strlen_P(manual);++i){
+			display.print((char)pgm_read_byte_near(manual + i));
+		}
+		display.display();
+		while(true){
+			if(left.isClick() || sh_l.isClick())
+				break;
+		}
+	}
 	void run(){
 		while(true){
 			switch(menu::draw(menus,menucount)){
@@ -205,7 +219,7 @@ namespace snake{
 					showScore();
 					break;
 				case 2:
-					//TODO: show manual
+					showManual();
 					break;
 				case 3:
 					return;
