@@ -41,7 +41,7 @@ namespace snake{
 		//one part = 2 bits → 32 bytes = 512 parts
 		//less parts are needed on greater zoom levels: 1→512, 2→256, 3→128
 		//TODO: should expand to a greater size if needed
-		const uint8_t partsLen=64/(1 << (zoom-1));
+		const uint8_t partsLen=32/(1 << (zoom-1));
 		uint8_t parts[partsLen] = {};
 		//technically it's the amount of parts including the head part.
 		uint8_t partAmnt = 3;
