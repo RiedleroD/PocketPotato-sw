@@ -67,11 +67,7 @@ void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom){
 			display.drawPixel(i+x*zoom,j+y*zoom,SSD1306_WHITE);
 }
 
-void printFromFlash(char* text){
-	char arrayBuf[16];
-	strcpy_P(arrayBuf, pgm_read_word(&text));
-	display.print(arrayBuf);
-}
+//TODO: add printFromFlash (see in menu.cpp)
 
 //to reset everything to how games usually want it
 void beginGame(){
@@ -95,5 +91,3 @@ void setBrightness(uint8_t amount){
 	digitalWrite(OLED_CS, HIGH);
 	SPI.endTransaction();
 }
-
-//TODO: add printFromFlash (see in menu.cpp)
