@@ -1,4 +1,12 @@
 namespace snake{
+	const char _menu0[] PROGMEM = "Start";
+	const char _menu1[] PROGMEM = "Score";
+	const char _menu2[] PROGMEM = "Guide";
+	const char _menu3[] PROGMEM = "Close";
+	
+	const char* const menus[] PROGMEM = {_menu0,_menu1,_menu2,_menu3};
+	const int menucount PROGMEM = sizeof(menus)/sizeof(char*);
+	
 	uint8_t getPartMaskOffset(uint8_t index){
 		return 2*(index%4);
 	}
@@ -15,9 +23,7 @@ namespace snake{
 	inline uint16_t getScore(uint8_t partAmnt,uint8_t speed,uint8_t zoom){
 		return (partAmnt-3)*speed/(1 << (zoom-1));
 	}
-	void game(){
-		//zoom - TODO: settable in game menu
-		const uint8_t zoom = 3;
+	void game(const uint8_t zoom,const uint8_t speed){
 		//clamping coords to half of previous each zoom step
 		const uint8_t coordMask = 0xFF >> zoom;
 		const uint8_t coordMask1= coordMask >> 1;
@@ -39,8 +45,6 @@ namespace snake{
 		uint8_t curCoords[2] = {(128 >> zoom)-1,(64 >> zoom)-1};
 		//setting initial apple coords so that they will be regenerated immediately
 		uint8_t appleCoords[2] = {(128 >> zoom)-2,(64 >> zoom)-1};
-		//speed will be set by a menu eventually - goes from 1 to 10
-		const uint8_t speed = 5;
 		uint32_t t1;
 		//setting color to invert what's behind it
 		display.setTextColor(SSD1306_INVERSE);
@@ -173,6 +177,23 @@ namespace snake{
 				right.tick();
 				sh_r.tick();
 				sh_l.tick();
+			}
+		}
+	}
+	void run(){
+		while(true){
+			switch(menu::draw(menus,menucount)){
+				case 0:
+					game(2,5);
+					break;
+				case 1:
+					//TODO: show score
+					break;
+				case 2:
+					//TODO: show manual
+					break;
+				case 3:
+					return;
 			}
 		}
 	}
