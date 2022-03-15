@@ -1,3 +1,5 @@
+#include "../funcs.h"
+
 namespace menu{
 	uint8_t draw(const char* const texts[], const uint8_t length) {
 		uint8_t select = 0;
