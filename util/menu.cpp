@@ -10,7 +10,7 @@ namespace menu{
 			//moving of index
 			if(up.isClick() || up.isStep())
 				if(--select > length) //detects an unsigned int overflow
-					select = maxIndex;
+					select = length-1;
 			if(down.isClick() || down.isStep())
 				if(++select > length-1)
 					select = 0;
