@@ -52,7 +52,7 @@ void setup() {
 }
 
 void loop() {
-	uint8_t select = menu::draw(apps, appcount);
+	const uint8_t select = menu::draw(apps, appcount);
 
 	beginGame();
 	switch (select) {

@@ -27,7 +27,8 @@
 #define ADR_SNAKESCORE 16 // 16 bits!
 
 // ---------- APPS ----------
-//Menues must be have an Array and the corresponding length as PROGMEM variables.
+//Menus must be have an Array and the corresponding length as PROGMEM variables.
+//These lists should be defined where they are used.
 //Here is an example of what this should look like:
 
 //const char _test1[] PROGMEM = "first";
