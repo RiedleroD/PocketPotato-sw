@@ -27,13 +27,24 @@
 #define ADR_SNAKESCORE 16 // 16 bits!
 
 // ---------- APPS ----------
+//Menus must be have an Array and the corresponding length as PROGMEM variables.
+//These lists should be defined where they are used.
+//Here is an example of what this should look like:
 
-const char _app1[] PROGMEM = "Controller Test";
-const char _app2[] PROGMEM = "Dino";
-const char _app3[] PROGMEM = "Pong";
-const char _app4[] PROGMEM = "Breakout";
+//const char _test1[] PROGMEM = "first";
+//const char _test2[] PROGMEM = "second";
+//
+//const char* const testArr[] PROGMEM = {_test1,_test2,_test3,_test4,_test5,_test6,_test7,_test8};
+//
+//const int testLen PROGMEM = sizeof(testArr)/sizeof(char*);
 
-//TODO: compress strings lol
-const char* const apps[] PROGMEM = {_app1,_app2,_app3,_app4};
+//Main Menu
+const char _app1[] PROGMEM = "Button Test";
+const char _app2[] PROGMEM = "Testgame";
+const char _app3[] PROGMEM = "EEPROM Test";
+const char _app4[] PROGMEM = "Snake";
+const char _app5[] PROGMEM = "Settings";
+
+const char* const apps[] PROGMEM = {_app1,_app2,_app3,_app4,_app5};
 
 const int appcount PROGMEM = sizeof(apps)/sizeof(char*);

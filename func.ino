@@ -50,7 +50,7 @@ void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const
 				j >>= 1;
 			}
 		}
-	}	
+	}
 	display.endWrite();
 }
 
@@ -67,20 +67,7 @@ void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom){
 			display.drawPixel(i+x*zoom,j+y*zoom,SSD1306_WHITE);
 }
 
-void drawMenu() {
-	char arrayBuf[16];  // Buffer for menu item
-	display.clearDisplay();
-	for(uint8_t curApp=0;curApp<appcount;++curApp){
-		//copy current app name into buffer
-		strcpy_P(arrayBuf, pgm_read_word(&(apps[curApp])));
-		//write current app name to screen
-		display.setCursor(10,curApp*10);
-		display.print(arrayBuf);
-	}
-	//write arrow
-	drawTexture(1,menu*10,arrow,5,9);
-	display.display();
-}
+//TODO: add printFromFlash (see in menu.cpp)
 
 //to reset everything to how games usually want it
 void beginGame(){
