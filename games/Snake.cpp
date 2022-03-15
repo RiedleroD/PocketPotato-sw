@@ -25,6 +25,13 @@ namespace snake{
 	inline uint16_t getScore(uint8_t partAmnt,uint8_t speed,uint8_t zoom){
 		return (partAmnt-3)*speed/(1 << (zoom-1));
 	}
+	void genApples(uint8_t* arr,const uint8_t zoom){
+		do{
+			const uint8_t tmp = 0b11111111 >> zoom;
+			arr[0]=1+random(tmp-1);
+			arr[1]=1+random((tmp >> 1) -1);
+		}while(arr[1]<<(zoom-1) <= 7 && arr[0]<<(zoom-1) <= 59);
+	}
 	void game(const uint8_t zoom,const uint8_t speed){
 		//clamping coords to half of previous each zoom step
 		const uint8_t coordMask = 0xFF >> zoom;
@@ -45,8 +52,9 @@ namespace snake{
 		//second coord is the Y coordinate (taking 6 bits, max value=63) and the direction (taking 2 bits)
 		//I could possibly merge this into one uint16_t, but idk which variant is faster.
 		uint8_t curCoords[2] = {(128 >> zoom)-1,(64 >> zoom)-1};
-		//setting initial apple coords so that they will be regenerated immediately
-		uint8_t appleCoords[2] = {(128 >> zoom)-2,(64 >> zoom)-1};
+		//setting initial apple coords
+		uint8_t appleCoords[2] = {0,0};
+		genApples(appleCoords,zoom);
 		uint32_t t1;
 		//setting color to invert what's behind it
 		display.setTextColor(SSD1306_INVERSE);
@@ -88,8 +96,7 @@ namespace snake{
 						dead = true;
 					}else if((curX == appleCoords[0]) && (curY == appleCoords[1])){
 						//regenerating apple if colliding with it
-						appleCoords[0]=1+random((0b10000000 >> zoom) -2);
-						appleCoords[1]=1+random((0b01000000 >> zoom) -2);
+						genApples(appleCoords,zoom);
 					}
 				}
 			}
@@ -165,9 +172,7 @@ namespace snake{
 			}
 			//apple collision & regeneration
 			if(((curCoords[0] == appleCoords[0]) && ((curCoords[1] & coordMask1) == appleCoords[1]))){
-				//regenerate apple
-				appleCoords[0]=1+random((0b10000000 >> zoom) -2);
-				appleCoords[1]=1+random((0b01000000 >> zoom) -2);
+				genApples(appleCoords,zoom);
 				//add one length
 				++partAmnt;
 			}
