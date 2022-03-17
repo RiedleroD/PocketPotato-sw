@@ -39,12 +39,5 @@
 //const int testLen PROGMEM = sizeof(testArr)/sizeof(char*);
 
 //Main Menu
-const char _app1[] PROGMEM = "Button Test";
-const char _app2[] PROGMEM = "Testgame";
-const char _app3[] PROGMEM = "EEPROM Test";
-const char _app4[] PROGMEM = "Snake";
-const char _app5[] PROGMEM = "Settings";
 
-const char* const apps[] PROGMEM = {_app1,_app2,_app3,_app4,_app5};
-
-const int appcount PROGMEM = sizeof(apps)/sizeof(char*);
+MENUSTRINGS5(app,"Button Test","Testgame","EEPROM Test","Snake","Settings");

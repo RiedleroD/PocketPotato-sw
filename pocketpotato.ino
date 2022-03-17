@@ -5,6 +5,7 @@
 #include <Adafruit_SSD1306.h>
 #include <GyverButton.h>
 #include <util/delay.h>
+#include "funcs.h"
 #include "config.h"
 #include "bitmaps.h"
 
