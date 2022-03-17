@@ -3,9 +3,9 @@
 //const char _test1[] PROGMEM = "first";
 //const char _test2[] PROGMEM = "second";
 //
-//const char* const tests[] PROGMEM = {_test1,_test2,_test3,_test4,_test5,_test6,_test7,_test8};
+//const char* const tests[] PROGMEM = {_test1,_test2};
 //
-//const int testcount PROGMEM = sizeof(testArr)/sizeof(char*);
+//const int testcount PROGMEM = sizeof(tests)/sizeof(char*);
 
 #ifndef MENUSTRING
 	#define MENUSTRING(name,string) const char _ ## name[] PROGMEM = string
