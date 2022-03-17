@@ -1,4 +1,27 @@
 namespace snake{
+	const char _menu0[] PROGMEM = "Start";
+	const char _menu1[] PROGMEM = "Score";
+	const char _menu2[] PROGMEM = "Guide";
+	const char _menu3[] PROGMEM = "Close";
+	const char* const menus[] PROGMEM = {_menu0,_menu1,_menu2,_menu3};
+	const int menucount PROGMEM = sizeof(menus)/sizeof(char*);
+	
+	const char _speed1[] PROGMEM = "Snail's pace";
+	const char _speed3[] PROGMEM = "Toddler Speed";
+	const char _speed5[] PROGMEM = "Acceptable";
+	const char _speed7[] PROGMEM = "Racing Mode";
+	const char _speed9[] PROGMEM = "Lightspeed";
+	const char* const speeds[] PROGMEM = {_speed1,_speed3,_speed5,_speed7,_speed9};
+	const int speedcount PROGMEM = sizeof(speeds)/sizeof(char*);
+	
+	const char _zoom1[] PROGMEM = "Blindworm";
+	const char _zoom2[] PROGMEM = "Grass Snake";
+	const char _zoom3[] PROGMEM = "Anaconda";
+	const char* const zooms[] PROGMEM = {_zoom1,_zoom2,_zoom3};
+	const int zoomcount PROGMEM = sizeof(zooms)/sizeof(char*);
+	
+	const char manual[] PROGMEM = "Collect the apples and get longer without colliding with yourself.\n\nUP+DOWN closes the game.";
+	
 	uint8_t getPartMaskOffset(uint8_t index){
 		return 2*(index%4);
 	}
@@ -15,9 +38,14 @@ namespace snake{
 	inline uint16_t getScore(uint8_t partAmnt,uint8_t speed,uint8_t zoom){
 		return (partAmnt-3)*speed/(1 << (zoom-1));
 	}
-	void game(){
-		//zoom - TODO: settable in game menu
-		const uint8_t zoom = 3;
+	void genApples(uint8_t* arr,const uint8_t zoom){
+		do{
+			const uint8_t tmp = 0b11111111 >> zoom;
+			arr[0]=1+random(tmp-1);
+			arr[1]=1+random((tmp >> 1) -1);
+		}while(arr[1]<<(zoom-1) <= 7 && arr[0]<<(zoom-1) <= 59);
+	}
+	void game(const uint8_t zoom,const uint8_t speed){
 		//clamping coords to half of previous each zoom step
 		const uint8_t coordMask = 0xFF >> zoom;
 		const uint8_t coordMask1= coordMask >> 1;
@@ -26,7 +54,7 @@ namespace snake{
 		//one part = 2 bits → 32 bytes = 512 parts
 		//less parts are needed on greater zoom levels: 1→512, 2→256, 3→128
 		//TODO: should expand to a greater size if needed
-		const uint8_t partsLen=64/(1 << (zoom-1));
+		const uint8_t partsLen=32/(1 << (zoom-1));
 		uint8_t parts[partsLen] = {};
 		//technically it's the amount of parts including the head part.
 		uint8_t partAmnt = 3;
@@ -37,10 +65,9 @@ namespace snake{
 		//second coord is the Y coordinate (taking 6 bits, max value=63) and the direction (taking 2 bits)
 		//I could possibly merge this into one uint16_t, but idk which variant is faster.
 		uint8_t curCoords[2] = {(128 >> zoom)-1,(64 >> zoom)-1};
-		//setting initial apple coords so that they will be regenerated immediately
-		uint8_t appleCoords[2] = {(128 >> zoom)-2,(64 >> zoom)-1};
-		//speed will be set by a menu eventually - goes from 1 to 10
-		const uint8_t speed = 5;
+		//setting initial apple coords
+		uint8_t appleCoords[2] = {0,0};
+		genApples(appleCoords,zoom);
 		uint32_t t1;
 		//setting color to invert what's behind it
 		display.setTextColor(SSD1306_INVERSE);
@@ -82,8 +109,7 @@ namespace snake{
 						dead = true;
 					}else if((curX == appleCoords[0]) && (curY == appleCoords[1])){
 						//regenerating apple if colliding with it
-						appleCoords[0]=1+random((0b10000000 >> zoom) -2);
-						appleCoords[1]=1+random((0b01000000 >> zoom) -2);
+						genApples(appleCoords,zoom);
 					}
 				}
 			}
@@ -159,9 +185,7 @@ namespace snake{
 			}
 			//apple collision & regeneration
 			if(((curCoords[0] == appleCoords[0]) && ((curCoords[1] & coordMask1) == appleCoords[1]))){
-				//regenerate apple
-				appleCoords[0]=1+random((0b10000000 >> zoom) -2);
-				appleCoords[1]=1+random((0b01000000 >> zoom) -2);
+				genApples(appleCoords,zoom);
 				//add one length
 				++partAmnt;
 			}
@@ -173,6 +197,53 @@ namespace snake{
 				right.tick();
 				sh_r.tick();
 				sh_l.tick();
+			}
+		}
+	}
+	void showScore(){
+		display.clearDisplay();
+		display.setCursor(10,27);
+		display.print(F("Highscore: "));
+		{
+			const uint16_t hiscore;
+			EEPROM.get(ADR_SNAKESCORE,hiscore);
+			display.print(hiscore);
+		}
+		display.display();
+		while(true){
+			if(left.isClick() || sh_l.isClick())
+				break;
+		}
+	}
+	void showManual(){
+		display.clearDisplay();
+		display.setCursor(0,0);
+		for (uint16_t i=0;i < strlen_P(manual);++i){
+			display.print((char)pgm_read_byte_near(manual + i));
+		}
+		display.display();
+		while(true){
+			if(left.isClick() || sh_l.isClick())
+				break;
+		}
+	}
+	void run(){
+		while(true){
+			switch(menu::draw(menus,menucount)){
+				case 0:
+					game(
+						1+menu::draw(zooms,zoomcount),
+						1+menu::draw(speeds,speedcount)*2
+						);
+					break;
+				case 1:
+					showScore();
+					break;
+				case 2:
+					showManual();
+					break;
+				case 3:
+					return;
 			}
 		}
 	}

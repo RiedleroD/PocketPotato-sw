@@ -17,8 +17,8 @@ GButton right(BTN_RIGHT);
 GButton sh_r(SH_R);
 GButton sh_l(SH_L);
 
-#include "games/games.cpp"
 #include "util/menu.cpp"
+#include "games/games.cpp"
 
 void setup() {
   Serial.begin(9600);
@@ -66,7 +66,7 @@ void loop() {
 			eepromtest();
 			break;
 		case 3:
-			snake::game();
+			snake::run();
 			break;
 		case 4:
 			showSettings();
