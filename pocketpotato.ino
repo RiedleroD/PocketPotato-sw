@@ -71,6 +71,9 @@ void loop() {
 		case 4:
 			showSettings();
 			break;
+		case 5:
+			dino::game();
+			break;
 	}
 	endGame();
 }

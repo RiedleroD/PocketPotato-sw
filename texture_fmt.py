@@ -31,7 +31,7 @@ def decompress(tx:str) -> str:
 
 def compress(tx:str) -> str:
 	encs=([],[],[],[])#TODO: refactor. This is garbage and inefficient and I don't wanna see it
-	
+
 	#array for playing favourites
 	for block_size in (8,4,2,10,6,3,5,9):
 		encs[0].append(
@@ -66,7 +66,7 @@ def compress(tx:str) -> str:
 	for a in encs:
 		print(*[f"{100*(1-(2+len(cx))/len(tx)):+03.0f}%" for cx in a])
 	chosen = min(min(encs[0],key=len),min(encs[1],key=len),min(encs[2],key=len),min(encs[3],key=len),key=len)
-		
+
 	if chosen in encs[0]:
 		return "00"+chosen
 	elif chosen in encs[1]:
@@ -138,7 +138,7 @@ def encode_RLE_packet(num:int) -> str:
 	l=get_bitwise_num_length(num)
 	length_pack=(1 << l-1)-2	#e.g. 110 for l==3 and 1110 for l==4
 	value_pack=num - (1 << l-1)#taking away the first digit since it's obviously 1
-	
+
 	#putting em besides each other, in a string bc python
 	return f"{{:0{l-1}b}}{{:0{l-1}b}}".format(length_pack,value_pack)
 
@@ -192,7 +192,7 @@ def get_binstring_from_numlist(j):
 
 def get_png_from_numlist(numl,w,h):
 	return get_png_from_binstring(get_binstring_from_numlist(numl),w,h)
-	
+
 def get_png_from_binstring(numl,w,h):
 	return png.from_array(([numl[x+y*w]=='1' for x in range(w)] for y in range(h)),"L;1",{"height":h,"width":w})
 
