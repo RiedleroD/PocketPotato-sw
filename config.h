@@ -31,12 +31,7 @@
 //These lists should be defined where they are used.
 //Here is an example of what this should look like:
 
-//const char _test1[] PROGMEM = "first";
-//const char _test2[] PROGMEM = "second";
-//
-//const char* const testArr[] PROGMEM = {_test1,_test2,_test3,_test4,_test5,_test6,_test7,_test8};
-//
-//const int testLen PROGMEM = sizeof(testArr)/sizeof(char*);
+//for more info → see the macro in funcs.h
 
 //Main Menu
 
