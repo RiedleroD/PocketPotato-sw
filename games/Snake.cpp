@@ -3,9 +3,22 @@ namespace snake{
 	const char _menu1[] PROGMEM = "Score";
 	const char _menu2[] PROGMEM = "Guide";
 	const char _menu3[] PROGMEM = "Close";
-	
 	const char* const menus[] PROGMEM = {_menu0,_menu1,_menu2,_menu3};
 	const int menucount PROGMEM = sizeof(menus)/sizeof(char*);
+	
+	const char _speed1[] PROGMEM = "Snail's pace";
+	const char _speed3[] PROGMEM = "Toddler Speed";
+	const char _speed5[] PROGMEM = "Acceptable";
+	const char _speed7[] PROGMEM = "Racing Mode";
+	const char _speed9[] PROGMEM = "Lightspeed";
+	const char* const speeds[] PROGMEM = {_speed1,_speed3,_speed5,_speed7,_speed9};
+	const int speedcount PROGMEM = sizeof(speeds)/sizeof(char*);
+	
+	const char _zoom1[] PROGMEM = "Blindworm";
+	const char _zoom2[] PROGMEM = "Grass Snake";
+	const char _zoom3[] PROGMEM = "Anaconda";
+	const char* const zooms[] PROGMEM = {_zoom1,_zoom2,_zoom3};
+	const int zoomcount PROGMEM = sizeof(zooms)/sizeof(char*);
 	
 	const char manual[] PROGMEM = "Collect the apples and get longer without colliding with yourself.\n\nUP+DOWN closes the game.";
 	
@@ -218,7 +231,10 @@ namespace snake{
 		while(true){
 			switch(menu::draw(menus,menucount)){
 				case 0:
-					game(2,5);
+					game(
+						1+menu::draw(zooms,zoomcount),
+						1+menu::draw(speeds,speedcount)*2
+						);
 					break;
 				case 1:
 					showScore();
