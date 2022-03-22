@@ -40,7 +40,14 @@
 		const char* const name ## s[] PROGMEM = {_ ## name ## 1,_ ## name ## 2,_ ## name ## 3,_ ## name ## 4,_ ## name ## 5};\
 		MENUCOUNT(name)
 #endif
-	
+
+#ifndef FUNCS_REPLACE
+	#define FUNCS_REPLACE
+	#define drawWhitePixel(x,y) display.drawPixel(x,y,SSD1306_WHITE);
+	#define drawBlackPixel(x,y) display.drawPixel(x,y,SSD1306_BLACK);
+	#define invertPixel(x,y) display.drawPixel(x,y,SSD1306_INVERSE);
+#endif
+
 //actual function headers
 
 extern void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height);
