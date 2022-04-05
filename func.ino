@@ -38,10 +38,11 @@ void drawTextureWithPalette(const uint8_t _x,const uint8_t _y,const uint8_t text
 	display.startWrite();
 	for(uint8_t y=_y;y<y_;++y){
 		for(uint8_t x=_x;x<x_;++x){
-			//reading single bit from texture array;
-			//pretty sure the lib knows that we're working with a single-bit
-			//color & we don't need values larger than 1 to draw pixels
-			display.drawPixel(x,y,(j & b) ? color1:color2);
+			//using b as temp variable for the current 'color'
+			b = (j & b) ? color1 : color2;
+			//not drawing transparent pixels
+			if(b!=TRANSPARENT)
+				display.drawPixel(x,y,b);
 			//incrementing counters
 			if(j==0b00000001){
 				j=0b10000000;
