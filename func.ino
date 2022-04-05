@@ -21,9 +21,10 @@ void showLogo() { // show logo with (bad) fade-in and -out
  * @param	texture	texture to be drawn
  * @param	width	width of the texture
  * @param	height	height of the texture
- * TODO: parameter to draw white as transparent
+ * @param	color1	first color
+ * @param	color2	second color
  */
-void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height){
+void drawTextureWithPalette(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height,const uint16_t color1,const uint16_t color2){
 	/* _y is the first y-coordinate
 	 * y_ is the last y-coordinate
 	 * y is the current y-coordinate
@@ -40,7 +41,7 @@ void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const
 			//reading single bit from texture array;
 			//pretty sure the lib knows that we're working with a single-bit
 			//color & we don't need values larger than 1 to draw pixels
-			display.drawPixel(x,y,( j & b) ? SSD1306_WHITE:SSD1306_BLACK);
+			display.drawPixel(x,y,(j & b) ? color1:color2);
 			//incrementing counters
 			if(j==0b00000001){
 				j=0b10000000;
