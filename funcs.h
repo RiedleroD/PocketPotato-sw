@@ -47,8 +47,8 @@
 	#define BLACK SSD1306_BLACK
 	#define INVERT SSD1306_INVERSE
 	#define TRANSPARENT 42 //very hacky, but works.
-	#define drawHLine(x,y,l,c) fillRect(x,y,l,1,c);
-	#define drawVLine(x,y,l,c) fillRect(x,y,1,l,c);
+	#define drawHLine(x,y,l,c) fillRect(x,y,l,1,c)
+	#define drawVLine(x,y,l,c) fillRect(x,y,1,l,c)
 	#define drawTexture(x,y,texture,width,height) drawTextureWithPalette(x,y,texture,width,height,WHITE,BLACK)
 #endif
 
