@@ -43,12 +43,19 @@
 
 #ifndef FUNCS_REPLACE
 	#define FUNCS_REPLACE
+	#define WHITE SSD1306_WHITE
+	#define BLACK SSD1306_BLACK
+	#define INVERT SSD1306_INVERSE
 	#define drawWhitePixel(x,y) display.drawPixel(x,y,SSD1306_WHITE);
 	#define drawBlackPixel(x,y) display.drawPixel(x,y,SSD1306_BLACK);
 	#define invertPixel(x,y) display.drawPixel(x,y,SSD1306_INVERSE);
+	#define drawHLine(x,y,l,c) fillRect(x,y,l,1,c);
+	#define drawVLine(x,y,l,c) fillRect(x,y,1,l,c);
 #endif
 
 //actual function headers
 
 extern void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height);
 extern void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom);
+extern void fillRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);
+extern void drawRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);

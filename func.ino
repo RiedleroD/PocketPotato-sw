@@ -69,6 +69,37 @@ void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom){
 
 //TODO: add printFromFlash (see in menu.cpp)
 
+/**
+ * Draws the inner outline of a rectangle
+ * @param x the x-coordinate of the top left corner of the rectangle
+ * @param y the y-coordinate of the top left corner of the rectangle
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ * @param color the color of the outline
+ */
+inline void drawRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color){
+	drawHLine(x,y,width,color);//top
+	drawVLine(x,y+1,height-1,color);//left
+	drawHLine(x+1,y+height-1,width-1,color);//bottom
+	drawVLine(x+width-1,y+1,height-2,color);//right
+}
+
+/**
+ * Fills a rectangle
+ * @param x the x-coordinate of the top left corner of the rectangle
+ * @param y the y-coordinate of the top left corner of the rectangle
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ * @param color the color of the rectangle
+ */
+inline void fillRect(const uint8_t _x,const uint8_t _y,const uint8_t width,const uint8_t height,const uint8_t color){
+	const uint8_t y_=_y+height;
+	const uint8_t x_=_x+width;
+	for(uint8_t x=_x;x<x_;++x)
+		for(uint8_t y=_y;y<y_;++y)
+			display.drawPixel(x,y,color);
+}
+
 //to reset everything to how games usually want it
 void beginGame(){
 	display.clearDisplay();
