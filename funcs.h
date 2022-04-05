@@ -46,9 +46,6 @@
 	#define WHITE SSD1306_WHITE
 	#define BLACK SSD1306_BLACK
 	#define INVERT SSD1306_INVERSE
-	#define drawWhitePixel(x,y) display.drawPixel(x,y,SSD1306_WHITE);
-	#define drawBlackPixel(x,y) display.drawPixel(x,y,SSD1306_BLACK);
-	#define invertPixel(x,y) display.drawPixel(x,y,SSD1306_INVERSE);
 	#define drawHLine(x,y,l,c) fillRect(x,y,l,1,c);
 	#define drawVLine(x,y,l,c) fillRect(x,y,1,l,c);
 #endif
