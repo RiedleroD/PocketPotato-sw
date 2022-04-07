@@ -27,8 +27,8 @@ namespace pong{
 			//drawing paddles
 			for(uint8_t _y=0;_y<paddle_size;++_y){
 				for(uint8_t _x=0;_x<2;++_x){
-					display.drawPixel(_x,y1+_y,SSD1306_WHITE);
-					display.drawPixel(126+_x,y2+_y,SSD1306_WHITE);
+					display.drawPixel(_x,y1+_y,WHITE);
+					display.drawPixel(126+_x,y2+_y,WHITE);
 				}
 			}
 			//drawing ball
@@ -37,7 +37,7 @@ namespace pong{
 					display.drawPixel(
 						(ballCoords[0] >> 8) + _x,
 						(ballCoords[1] >> 8) + _y,
-						SSD1306_WHITE
+						WHITE
 					);
 			//drawing score as 0:0 in the center of the screen
 			display.setCursor(score[0]>9 ? 55-6*(uint8_t)(log10(score[0])) : 55,0);

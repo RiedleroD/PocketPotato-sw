@@ -53,7 +53,7 @@ namespace snake{
 		genApples(appleCoords,zoom);
 		uint32_t t1;
 		//setting color to invert what's behind it
-		display.setTextColor(SSD1306_INVERSE);
+		display.setTextColor(INVERT);
 		//boolean to signal when you died
 		bool dead = false;
 		//I use blocks here to eliminate temporary variables when they're not needed anymore
@@ -114,7 +114,7 @@ namespace snake{
 					Serial.println(hiscore);
 					if(hiscore<score){//checking for highscore
 						display.setCursor(34,32);//centered text
-						display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);//overwrites background
+						display.setTextColor(WHITE,BLACK);//overwrites background
 						display.print(F("HIGHSCORE!"));
 						display.display();
 						EEPROM.put(ADR_SNAKESCORE,score);
