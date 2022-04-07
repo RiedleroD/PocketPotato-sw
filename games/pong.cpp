@@ -30,6 +30,9 @@ namespace pong{
 		resetBall(mode,ball_speed,ballCoords,ballSpeeds);
 		ballSpeeds[1]=ballSpeeds[0];
 		
+		//invert text so ball can still be seen behind it
+		display.setTextColor(INVERT);
+		
 		uint32_t t1;
 		uint16_t score[2] = {0,0};
 		
