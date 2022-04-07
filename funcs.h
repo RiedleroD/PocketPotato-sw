@@ -49,9 +49,21 @@
 		const char* const name ## s[] PROGMEM = {_ ## name ## 1,_ ## name ## 2,_ ## name ## 3,_ ## name ## 4,_ ## name ## 5,_ ## name ## 6};\
 		MENUCOUNT(name)
 #endif
-	
+
+#ifndef FUNCS_REPLACE
+	#define FUNCS_REPLACE
+	#define WHITE SSD1306_WHITE
+	#define BLACK SSD1306_BLACK
+	#define INVERT SSD1306_INVERSE
+	#define TRANSPARENT 42 //very hacky, but works.
+	#define drawHLine(x,y,l,c) fillRect(x,y,l,1,c)
+	#define drawVLine(x,y,l,c) fillRect(x,y,1,l,c)
+	#define drawTexture(x,y,texture,width,height) drawTextureWithPalette(x,y,texture,width,height,WHITE,BLACK)
+#endif
+
 //actual function headers
 
-extern void drawTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height);
+extern void drawTextureWithPalette(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height,const uint16_t color1,const uint16_t color2);
 extern void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom);
-extern void printFromFlash(char* text);
+extern void fillRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);
+extern void drawRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);
