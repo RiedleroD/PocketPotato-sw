@@ -1,5 +1,6 @@
 namespace pong{
 	MENUSTRINGS4(speed,"Slowest","Slow","Normal","Fast");
+	MENUSTRINGS5(paddlesize,"Pixel","Stick","Paddle","Pipe","Tower");
 	
 	int16_t calculateBallSpeed(const uint8_t paddle_size,const uint8_t by,const uint8_t y1,const uint8_t ball_speed){
 		return (ball_speed/5)*(255/paddle_size)*(1+by-y1-(paddle_size/2));
@@ -89,6 +90,6 @@ namespace pong{
 		}
 	}
 	void run(){
-		game(10,1+3*menu::draw(speeds,speedcount));
+		game(pow(2,1+menu::draw(paddlesizes,paddlesizecount)),1+3*menu::draw(speeds,speedcount));
 	}
 }
