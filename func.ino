@@ -35,14 +35,15 @@ void drawTextureWithPalette(const uint8_t _x,const uint8_t _y,const uint8_t text
 	uint16_t i=0;//index in current array of uint8_t
 	uint8_t j=0b10000000;//bitmask for current uint8_t
 	uint8_t b=pgm_read_byte_near(texture+i);//current uint8_t
+	uint8_t color;
 	display.startWrite();
 	for(uint8_t y=_y;y<y_;++y){
 		for(uint8_t x=_x;x<x_;++x){
-			//using b as temp variable for the current 'color'
-			b = (j & b) ? color1 : color2;
+			//getting current color
+			color = (j & b) ? color1 : color2;
 			//not drawing transparent pixels
-			if(b!=TRANSPARENT)
-				display.drawPixel(x,y,b);
+			if(color!=TRANSPARENT)
+				display.drawPixel(x,y,color);
 			//incrementing counters
 			if(j==0b00000001){
 				j=0b10000000;
