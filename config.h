@@ -35,4 +35,4 @@
 
 //Main Menu
 
-MENUSTRINGS5(app,"Button Test","Testgame","EEPROM Test","Snake","Pong","Settings");
+MENUSTRINGS6(app,"Button Test","Testgame","EEPROM Test","Snake","Pong","Settings");
