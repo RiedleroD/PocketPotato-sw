@@ -48,6 +48,8 @@ namespace pong{
 				y2--;
 			if(right.state() && y2<(64-paddle_size))
 				y2++;
+			if(sh_l.isClick())
+				return;
 		/*ball handling 😏*/
 		{
 			uint8_t bx=ballCoords[0] >> 8;
