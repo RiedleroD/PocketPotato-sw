@@ -46,14 +46,18 @@ ifneq ($(MAKECMDGOALS),clean)
     endif
 endif
 
+#path to the binary file of the program
+BIN_FP = ./build/$(subst :,.,$(BOARD))/pocketpotato.ino.elf
+
 all : | flash debug
 debug : detect-hardware
 	stty -$(STTY_F) $(PORT) raw 9600
 	cat $(PORT)
 
-flash : | detect-hardware build
-	arduino-cli upload -i "./build/$(subst :,.,$(BOARD))/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
-build : detect-hardware
+flash : detect-hardware $(BIN_FP)
+	arduino-cli upload -i "$(BIN_FP)" --fqbn $(BOARD) -p $(PORT)
+build : $(BIN_FP)
+$(BIN_FP) : detect-hardware *.h */*.cpp *.ino
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
 #tests :	# TODO: make test cases
 #	echo "generate test binaries"
