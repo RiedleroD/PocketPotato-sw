@@ -109,12 +109,12 @@ namespace pong{
 					//checking if new highscore
 					uint16_t hiscore;
 					EEPROM.get(ADR_PONGSCORE,hiscore);
-					if(hiscore<score){
+					if(hiscore<score[0]){
 						display.setCursor(34,32);//centered text
 						display.setTextColor(WHITE,BLACK);//overwrites background
 						display.print(F("HIGHSCORE!"));
 						display.display();
-						EEPROM.put(ADR_PONGSCORE,score);
+						EEPROM.put(ADR_PONGSCORE,score[0]);
 						display.setTextColor(INVERT);//reset text color
 						_delay_ms(1000);
 					}
