@@ -105,9 +105,22 @@ namespace pong{
 			//goal handling
 			if(bx-1 >= 125){
 				resetBall(mode,ball_speed,ballCoords,ballSpeeds);
-				if(mode==2)
+				if(mode==2){
+					//checking if new highscore
+					uint16_t hiscore;
+					EEPROM.get(ADR_PONGSCORE,hiscore);
+					if(hiscore<score){
+						display.setCursor(34,32);//centered text
+						display.setTextColor(WHITE,BLACK);//overwrites background
+						display.print(F("HIGHSCORE!"));
+						display.display();
+						EEPROM.put(ADR_PONGSCORE,score);
+						display.setTextColor(INVERT);//reset text color
+						_delay_ms(1000);
+					}
+					//resetting score
 					score[0] = 0;
-				else{
+				}else{
 					if(bx==0 || bx==255){//goal into left
 						score[1]++;
 					}else if(bx>=124){//goal into right
