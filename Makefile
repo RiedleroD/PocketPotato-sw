@@ -42,22 +42,25 @@ ifneq ($(MAKECMDGOALS),clean)
             $(error could not determine port from line: $(BOARDLIST))
         endif
     else
-        PORT := ""
+        $(error no board connected)
     endif
+    $(info using port $(PORT))
+    $(info and board $(BOARD))
+    $(info )
 endif
 
 #path to the binary file of the program
 BIN_FP = ./build/$(subst :,.,$(BOARD))/pocketpotato.ino.elf
 
 all : | flash debug
-debug : detect-hardware
+debug :
 	stty -$(STTY_F) $(PORT) raw 9600
 	cat $(PORT)
 
-flash : detect-hardware $(BIN_FP)
+flash : $(BIN_FP)
 	arduino-cli upload -i "$(BIN_FP)" --fqbn $(BOARD) -p $(PORT)
 build : $(BIN_FP)
-$(BIN_FP) : detect-hardware *.h */*.cpp *.ino
+$(BIN_FP) : *.h */*.cpp *.ino
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
 #tests :	# TODO: make test cases
 #	echo "generate test binaries"
@@ -67,13 +70,3 @@ clean :
 prepare :
 	arduino-cli core install arduino:avr
 	arduino-cli lib install "Adafruit SSD1306"
-
-detect-hardware :
-	@#echo "$(BOARDLIST)"
-	@if [ "$(BOARDLIST)" == "No boards found." ]; then\
-		echo "No boards found to be connected."; \
-		exit 1; \
-	fi
-	@echo "using port $(PORT)"
-	@echo "and board $(BOARD)"
-	@echo ""
