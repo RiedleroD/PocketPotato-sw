@@ -1,7 +1,7 @@
 namespace pong{
+	MENUSTRINGS5(menu,"Start: PvP","       PvE","       PvW","Score","Close");
 	MENUSTRINGS4(speed,"Slowest","Slow","Normal","Fast");
 	MENUSTRINGS5(paddlesize,"Pixel","Stick","Paddle","Pipe","Tower");
-	MENUSTRINGS3(mode,"PvP","PvE","Highscore");
 	
 	int16_t calculateBallSpeed(const uint8_t paddle_size,const uint8_t by,const uint8_t y1,const uint8_t ball_speed){
 		return (ball_speed/5)*(255/paddle_size)*(1+by-y1-(paddle_size/2));
@@ -136,7 +136,41 @@ namespace pong{
 			while(millis()-t1 < 10);
 		}
 	}
+	void showScore(){
+		display.clearDisplay();
+		display.setCursor(10,27);
+		display.print(F("Highscore: "));
+		{
+			const uint16_t hiscore;
+			EEPROM.get(ADR_PONGSCORE,hiscore);
+			display.print(hiscore);
+		}
+		display.display();
+		while(true){
+			if(left.isClick() || sh_l.isClick())
+				break;
+		}
+	}
 	void run(){
-		game(pow(2,1+menu::draw(paddlesizes,paddlesizecount)),1+3*menu::draw(speeds,speedcount),menu::draw(modes,modecount));
+		uint8_t mode;
+		while(true){
+			mode = menu::draw(menus,menucount);
+			switch(mode){
+				case 0:
+				case 1:
+				case 2:
+					game(
+						pow(2, 1+menu::draw(paddlesizes,paddlesizecount)),
+						1 + 3*menu::draw(speeds,speedcount),
+						mode
+					);
+					break;
+				case 3:
+					showScore();
+					break;
+				case 4:
+					return;
+			}
+		}
 	}
 }
