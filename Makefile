@@ -20,6 +20,7 @@ endif
 #sets BOARD and PORT to hopefully correct values
 #for reference, here are some valid BOARDLIST examples:
 #/dev/cu.usbmodem14101             serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
+#/dev/ttyUSB0                      serial                     Unknown
 ifneq ($(MAKECMDGOALS),clean)
     $(info getting boards)
     ifndef BOARDLIST
