@@ -108,10 +108,10 @@ namespace pong{
 				if(mode==2)
 					score[0] = 0;
 				else{
-					if(bx==0 || bx==255){
-						score[0]++;
-					}else if(bx>=124){
+					if(bx==0 || bx==255){//goal into left
 						score[1]++;
+					}else if(bx>=124){//goal into right
+						score[0]++;
 						ballSpeeds[0]=-ballSpeeds[0];//sending ball to previous victor
 					}
 				}
