@@ -70,6 +70,9 @@ void loop() {
 			snake::run();
 			break;
 		case 4:
+			pong::run();
+			break;
+		case 5:
 			showSettings();
 			break;
 	}
