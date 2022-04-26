@@ -51,14 +51,23 @@ namespace snake{
 		//setting initial apple coords
 		uint8_t appleCoords[2] = {0,0};
 		genApples(appleCoords,zoom);
-		uint32_t t1;
 		//setting color to invert what's behind it
 		display.setTextColor(INVERT);
 		//boolean to signal when you died
 		bool dead = false;
 		//I use blocks here to eliminate temporary variables when they're not needed anymore
 		while(true){
-			t1 = millis();
+			//throttle frametime to set speed
+			for(uint8_t i=0;i<5;i++){
+				smartSleep(12-speed);
+				//ticking buttons to keep em working
+				up.tick();
+				down.tick();
+				left.tick();
+				right.tick();
+				sh_r.tick();
+				sh_l.tick();
+			}
 			//drawing snake + tail-related collision detection
 			{
 				display.clearDisplay();
@@ -171,15 +180,6 @@ namespace snake{
 				genApples(appleCoords,zoom);
 				//add one length
 				++partAmnt;
-			}
-			//throttle frametime to set speed
-			while((millis()-t1)<(60-5*speed)){
-				up.tick();
-				down.tick();
-				left.tick();
-				right.tick();
-				sh_r.tick();
-				sh_l.tick();
 			}
 		}
 	}

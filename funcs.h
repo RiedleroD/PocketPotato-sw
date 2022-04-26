@@ -67,3 +67,4 @@ extern void drawTextureWithPalette(const uint8_t _x,const uint8_t _y,const uint8
 extern void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom);
 extern void fillRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);
 extern void drawRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);
+extern void smartSleep(const uint32_t want_dt);

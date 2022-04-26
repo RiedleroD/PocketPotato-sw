@@ -115,6 +115,20 @@ void endGame(){
 	display.setTextColor(SSD1306_WHITE);
 }
 
+uint32_t _smartSleepCheckPoint = 0;
+/**
+ * Sleeps until the given time has passed since the last call
+ * since the first call doesn't wait, this should be added as the first call in the loop-to-limit
+ * @param want_dt the given time in milliseconds
+ */
+void smartSleep(const uint32_t want_dt){
+	uint32_t is_dt = millis()-_smartSleepCheckPoint;
+	if(is_dt < want_dt){
+		delay(want_dt - is_dt);
+	}
+	_smartSleepCheckPoint += is_dt;//no new millis() for precision - and also speed
+}
+
 //0 is completely dark and 255 is completely bright
 void setBrightness(uint8_t amount){
 	SPI.beginTransaction(SPISettings(8000000UL,MSBFIRST,SPI_MODE0));

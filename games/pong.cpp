@@ -33,11 +33,11 @@ namespace pong{
 		//invert text so ball can still be seen behind it
 		display.setTextColor(INVERT);
 		
-		uint32_t t1;
 		uint16_t score[2] = {0,0};
 		
 		while(true){
-			t1 = millis();
+		/*speed limiting to ~60fps*/
+			smartSleep(10);
 		/*rendering*/
 			display.clearDisplay();
 			//drawing paddles
@@ -145,8 +145,6 @@ namespace pong{
 			ballCoords[0] += ballSpeeds[0];
 			ballCoords[1] += ballSpeeds[1];
 		}
-		/*speed limiting*/
-			while(millis()-t1 < 10);
 		}
 	}
 	void showScore(){
