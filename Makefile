@@ -1,4 +1,4 @@
-.PHONY: all debug build flash clean fresh tests prepare detect-hardware
+.PHONY: all debug build flash clean fresh prepare
 
 #external libraries (external to arduino-cli, at least)
 LIBS = "./external/GyverButton/"
@@ -16,11 +16,15 @@ else
   endif
 endif
 
+ifeq ($(MAKECMDGOALS),)
+	MAKECMDGOALS := all
+endif
 
 #sets BOARD and PORT to hopefully correct values
 #for reference, here are some valid BOARDLIST examples:
 #/dev/cu.usbmodem14101             serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
-ifneq ($(MAKECMDGOALS),clean)
+#/dev/ttyUSB0                      serial                     Unknown
+ifneq ($(MAKECMDGOALS),$(filter $(MAKECMDGOALS),clean prepare))
     $(info getting boards)
     ifndef BOARDLIST
         ALLBOARDS := $(shell printf %q "$$(arduino-cli board list)")
@@ -35,40 +39,36 @@ ifneq ($(MAKECMDGOALS),clean)
         BOARD := $(filter arduino:avr:% , $(BOARDLIST))
         ifeq ($(BOARD),)
             $(warning could not determine board type, assuming arduino nano)
-            BOARD := "arduino:avr:nano"
+            BOARD := arduino:avr:nano
         endif
         ifeq ($(PORT),)
             $(error could not determine port from line: $(BOARDLIST))
         endif
     else
-        PORT := ""
+        $(error no board connected)
     endif
+    $(info using port $(PORT))
+    $(info and board $(BOARD))
+    $(info $(shell echo -e "\033[36mset environment-variable \"BOARDLIST\" to skip hardware detection\033[0m"))
+    $(info )
 endif
 
+#path to the binary file of the program
+BIN_FP = ./build/$(subst :,.,$(BOARD))/pocketpotato.ino.elf
+
 all : | flash debug
-debug : detect-hardware
+debug :
 	stty -$(STTY_F) $(PORT) raw 9600
 	cat $(PORT)
 
-flash : | detect-hardware build
-	arduino-cli upload -i "./build/$(subst :,.,$(BOARD))/pocketpotato.ino.elf" --fqbn $(BOARD) -p $(PORT)
-build : detect-hardware
+flash : $(BIN_FP)
+	arduino-cli upload -i "$(BIN_FP)" --fqbn $(BOARD) -p $(PORT)
+build : $(BIN_FP)
+$(BIN_FP) : *.h */*.cpp *.ino
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
-#tests :	# TODO: make test cases
-#	echo "generate test binaries"
 clean :
 	rm ./build -drf
 	rm ./__pycache__ -drf
 prepare :
 	arduino-cli core install arduino:avr
 	arduino-cli lib install "Adafruit SSD1306"
-
-detect-hardware :
-	@#echo "$(BOARDLIST)"
-	@if [ "$(BOARDLIST)" == "No boards found." ]; then\
-		echo "No boards found to be connected."; \
-		exit 1; \
-	fi
-	@echo "using port $(PORT)"
-	@echo "and board $(BOARD)"
-	@echo ""
