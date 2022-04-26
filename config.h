@@ -25,6 +25,7 @@
 #define ADR_BRIGHTNESS 1
 
 #define ADR_SNAKESCORE 16 // 16 bits!
+#define ADR_PONGSCORE 18 // 16 bits!
 
 // ---------- APPS ----------
 //Menus must be have an Array and the corresponding length as PROGMEM variables.
@@ -35,4 +36,4 @@
 
 //Main Menu
 
-MENUSTRINGS5(app,"Button Test","Testgame","EEPROM Test","Snake","Settings");
+MENUSTRINGS6(app,"Button Test","Testgame","EEPROM Test","Snake","Pong","Settings");
