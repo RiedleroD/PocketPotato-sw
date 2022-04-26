@@ -36,7 +36,7 @@ ifneq ($(MAKECMDGOALS),clean)
         BOARD := $(filter arduino:avr:% , $(BOARDLIST))
         ifeq ($(BOARD),)
             $(warning could not determine board type, assuming arduino nano)
-            BOARD := "arduino:avr:nano"
+            BOARD := arduino:avr:nano
         endif
         ifeq ($(PORT),)
             $(error could not determine port from line: $(BOARDLIST))
