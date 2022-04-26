@@ -69,10 +69,10 @@ void loop() {
 			snake::run();
 			break;
 		case 4:
-			showSettings();
+			dino::game();
 			break;
 		case 5:
-			dino::game();
+			showSettings();
 			break;
 	}
 	endGame();

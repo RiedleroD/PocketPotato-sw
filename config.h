@@ -43,8 +43,8 @@ const char _app1[] PROGMEM = "Button Test";
 const char _app2[] PROGMEM = "Testgame";
 const char _app3[] PROGMEM = "EEPROM Test";
 const char _app4[] PROGMEM = "Snake";
-const char _app5[] PROGMEM = "Settings";
-const char _app6[] PROGMEM = "Dino";
+const char _app5[] PROGMEM = "Dino";
+const char _app6[] PROGMEM = "Settings";
 
 const char* const apps[] PROGMEM = {_app1,_app2,_app3,_app4,_app5,_app6};
 
