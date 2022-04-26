@@ -1,4 +1,4 @@
-.PHONY: all debug build flash clean fresh tests prepare detect-hardware
+.PHONY: all debug build flash clean fresh prepare detect-hardware
 
 #external libraries (external to arduino-cli, at least)
 LIBS = "./external/GyverButton/"
@@ -62,8 +62,6 @@ flash : $(BIN_FP)
 build : $(BIN_FP)
 $(BIN_FP) : *.h */*.cpp *.ino
 	arduino-cli compile --fqbn $(BOARD) --libraries $(LIBS) ./ -e
-#tests :	# TODO: make test cases
-#	echo "generate test binaries"
 clean :
 	rm ./build -drf
 	rm ./__pycache__ -drf
