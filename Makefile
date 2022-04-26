@@ -16,6 +16,9 @@ else
   endif
 endif
 
+ifeq ($(MAKECMDGOALS),)
+	MAKECMDGOALS := all
+endif
 
 #sets BOARD and PORT to hopefully correct values
 #for reference, here are some valid BOARDLIST examples:
