@@ -1,4 +1,4 @@
-.PHONY: all debug build flash clean fresh prepare detect-hardware
+.PHONY: all debug build flash clean fresh prepare
 
 #external libraries (external to arduino-cli, at least)
 LIBS = "./external/GyverButton/"
