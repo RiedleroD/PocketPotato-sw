@@ -46,7 +46,7 @@ ifneq ($(MAKECMDGOALS),$(filter $(MAKECMDGOALS),clean prepare))
     endif
     $(info using port $(PORT))
     $(info and board $(BOARD))
-    $(info $(shell echo -e "\033[36mset environment-variable \"BOARDLIST\" to skip hardware detection\033[38m"))
+    $(info $(shell echo -e "\033[36mset environment-variable \"BOARDLIST\" to skip hardware detection\033[0m"))
     $(info )
 endif
 
