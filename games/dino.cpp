@@ -1,27 +1,28 @@
 namespace dino {
 	void game() {
-		float y = 42;
+		const uint8_t FLOOR_Y = 42;
+		float y = FLOOR_Y;
 		float vel = 0;
-		unsigned long nextPrint = 0;
 		unsigned long nextMove = 0;
 		unsigned long lastMove = 0;
 		unsigned long nextStep = 0;
 		unsigned long startTime = millis();
-		uint8_t step = 0;
+		uint8_t animStep = 0;
+		uint8_t* animFrames[] = {keksiLegs1,keksiLegs2,keksiLegs3,keksiLegs4};
 
 		uint8_t cactx = 128;
 
 		while (true) {
-			//input detection
-			if(up.state() && y == 42 && !down.state())
+			//jump & ground check if down is not held
+			if(up.state() && y == FLOOR_Y && !down.state())
 				vel = 300;
-
-			if(down.state() && y < 42)
+			//faster fall if down is held
+			if(down.state() && y < FLOOR_Y)
 				vel = -8;
 
 			if(millis() > nextMove) {
 				//moves the player
-				if(vel!= 0 || y < 42) {
+				if(vel!= 0 || y < FLOOR_Y) {
 					y -= vel * ((millis() - lastMove)/1000.0);
 					vel -= 1200 * ((millis() - lastMove)/1000.0);
 				}
@@ -35,8 +36,8 @@ namespace dino {
 			}
 
 			//resets Momentum on Ground
-			if(y >= 42) {
-				y = 42;
+			if(y >= FLOOR_Y) {
+				y = FLOOR_Y;
 				vel = 0;
 			}
 
@@ -54,28 +55,15 @@ namespace dino {
 				}
 			}
 
-			drawTexture(cactx, 42, cactus, 15, 20);
+			drawTexture(cactx, FLOOR_Y, cactus, 15, 20);
 
 			drawTexture(20, y, keksiHead, 15, 20);
 			if(millis() > nextStep) {
 				nextStep = millis() + 100;
-				if(++step >= 4)
-					step = 0;
+				if(++animStep >= 4)
+					animStep = 0;
 			}
-			switch (step) {
-				case 0:
-					drawTexture(20, y+15, keksiLegs1, 15, 5);
-					break;
-				case 1:
-					drawTexture(20, y+15, keksiLegs2, 15, 5);
-					break;
-				case 2:
-					drawTexture(20, y+15, keksiLegs3, 15, 5);
-					break;
-				case 3:
-					drawTexture(20, y+15, keksiLegs4, 15, 5);
-					break;
-			}
+			drawTexture(20, y+15, animFrames[animStep], 15, 5);
 
 			//diplays score
 			display.setCursor(2,2);
