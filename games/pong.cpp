@@ -36,6 +36,8 @@ namespace pong{
 		uint16_t score[2] = {0,0};
 		
 		while(true){
+		/*speed limiting to ~60fps*/
+			smartSleep(10);
 		/*rendering*/
 			display.clearDisplay();
 			//drawing paddles
@@ -143,8 +145,6 @@ namespace pong{
 			ballCoords[0] += ballSpeeds[0];
 			ballCoords[1] += ballSpeeds[1];
 		}
-			/*speed limiting to ~60fps*/
-			smartSleep(10);
 		}
 	}
 	void showScore(){

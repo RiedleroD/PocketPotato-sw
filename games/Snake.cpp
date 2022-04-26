@@ -57,6 +57,17 @@ namespace snake{
 		bool dead = false;
 		//I use blocks here to eliminate temporary variables when they're not needed anymore
 		while(true){
+			//throttle frametime to set speed
+			for(uint8_t i=0;i<5;i++){
+				smartSleep(12-speed);
+				//ticking buttons to keep em working
+				up.tick();
+				down.tick();
+				left.tick();
+				right.tick();
+				sh_r.tick();
+				sh_l.tick();
+			}
 			//drawing snake + tail-related collision detection
 			{
 				display.clearDisplay();
@@ -169,17 +180,6 @@ namespace snake{
 				genApples(appleCoords,zoom);
 				//add one length
 				++partAmnt;
-			}
-			//throttle frametime to set speed
-			for(uint8_t i=0;i<5;i++){
-				smartSleep(12-speed);
-				//ticking buttons to keep em working
-				up.tick();
-				down.tick();
-				left.tick();
-				right.tick();
-				sh_r.tick();
-				sh_l.tick();
 			}
 		}
 	}

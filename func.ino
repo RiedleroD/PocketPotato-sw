@@ -118,6 +118,7 @@ void endGame(){
 uint32_t _smartSleepCheckPoint = 0;
 /**
  * Sleeps until the given time has passed since the last call
+ * since the first call doesn't wait, this should be added as the first call in the loop-to-limit
  * @param want_dt the given time in milliseconds
  */
 void smartSleep(const uint32_t want_dt){
