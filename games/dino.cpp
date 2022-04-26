@@ -1,43 +1,48 @@
 namespace dino {
 	void game() {
-		uint8_t y = 42;
-		int8_t vel = 0;
+		float y = 42;
+		float vel = 0;
 		unsigned long nextPrint = 0;
 		unsigned long nextMove = 0;
+		unsigned long lastMove = 0;
 		unsigned long nextStep = 0;
+		unsigned long startTime = millis();
 		uint8_t step = 0;
 
 		uint8_t cactx = 128;
 
 		while (true) {
+			//input detection
 			if(up.state() && y == 42 && !down.state())
-				vel = 8;
+				vel = 300;
 
 			if(down.state() && y < 42)
 				vel = -8;
 
 			if(millis() > nextMove) {
-				if(vel != 0 || y < 42) {
-					y -= vel;
-					vel--;
+				//moves the player
+				if(vel!= 0 || y < 42) {
+					y -= vel * ((millis() - lastMove)/1000.0);
+					vel -= 1200 * ((millis() - lastMove)/1000.0);
 				}
-				cactx--;
+				lastMove = millis();
+
+				//moves the cactus;
+				cactx -= 5;
 				if(cactx < 0)
-					cactx;
+					cactx = 128;
 				nextMove = millis() + 20;
 			}
 
+			//resets Momentum on Ground
 			if(y >= 42) {
 				y = 42;
 				vel = 0;
 			}
 
-			//DEBUG
-			if(millis() > nextPrint) {
-				Serial.print(y);
-				Serial.print(", ");
-				Serial.println(vel);
-				nextPrint = millis() + 1000;
+			//collision detection
+			if(cactx >= 20 && cactx <= 35 && y >= 22) {
+				Serial.println("Fail!");
 			}
 
 			//draw graphics
@@ -71,6 +76,11 @@ namespace dino {
 					drawTexture(20, y+15, keksiLegs4, 15, 5);
 					break;
 			}
+
+			//diplays score
+			display.setCursor(2,2);
+			display.print(F("Score: "));
+			display.print((millis()-startTime)/10);
 
 			display.display();
 
