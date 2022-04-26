@@ -21,7 +21,7 @@ endif
 #for reference, here are some valid BOARDLIST examples:
 #/dev/cu.usbmodem14101             serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
 #/dev/ttyUSB0                      serial                     Unknown
-ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),$(filter $(MAKECMDGOALS),clean prepare))
     $(info getting boards)
     ifndef BOARDLIST
         ALLBOARDS := $(shell printf %q "$$(arduino-cli board list)")
