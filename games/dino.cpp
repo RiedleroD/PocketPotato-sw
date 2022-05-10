@@ -79,22 +79,14 @@ namespace dino {
 		uint16_t score = (millis()-startTime)/100;
 
 		//draws GameOver screen
-		for(int i = 32; i < 96; i++) { display.drawPixel(i, 16, SSD1306_WHITE); }
-		for(int j = 17; j < 47; j++) { display.drawPixel(32, j, SSD1306_WHITE); }
-		for(int j = 17; j < 47; j++) { display.drawPixel(95, j, SSD1306_WHITE); }
-		for(int i = 32; i < 96; i++) { display.drawPixel(i, 47, SSD1306_WHITE); }
+		drawRect(32,16,64,32,WHITE);
+		fillRect(33,17,62,30,BLACK);
 
-		for(int i = 17; i < 47; i++) {
-			for(int j = 33; j < 95; j++) {
-				display.drawPixel(j, i, SSD1306_BLACK);
-			}
-		}
 		display.setCursor(37, 18);
 		display.print(F("Game Over"));
 
 		uint16_t highscore;
 		EEPROM.get(ADR_DINOSCORE, highscore);
-		Serial.println(highscore);
 		if(score > highscore || highscore == 65535) {
 			display.setCursor(37, 28);
 			display.print(F("New Highscore"));
