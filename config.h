@@ -25,6 +25,7 @@
 #define ADR_BRIGHTNESS 1
 
 #define ADR_SNAKESCORE 16 // 16 bits!
+#define ADR_DINOSCORE 32 //16 bits
 
 // ---------- APPS ----------
 //Menus must be have an Array and the corresponding length as PROGMEM variables.
