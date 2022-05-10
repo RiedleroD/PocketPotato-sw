@@ -24,6 +24,11 @@ GButton sh_l(SH_L);
 void setup() {
   Serial.begin(9600);
   Serial.println(F("called setup()"));
+  
+  pinMode(OLED_VCC1,OUTPUT);
+  digitalWrite(OLED_VCC1,HIGH);
+  pinMode(OLED_VCC2,OUTPUT);
+  digitalWrite(OLED_VCC1,HIGH);
 
   SPI.begin();
 

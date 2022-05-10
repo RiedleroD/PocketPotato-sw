@@ -1,18 +1,22 @@
 // ---------- HARDWARE PINS ----------
 // D-Pad
-#define BTN_UP 1
-#define BTN_DOWN 3
-#define BTN_LEFT 6
-#define BTN_RIGHT 4
+#define BTN_UP A3
+#define BTN_DOWN A2
+#define BTN_LEFT A1
+#define BTN_RIGHT A0
 //Shoulder Buttons
-#define SH_R 7
-#define SH_L 2
+#define SH_R A4
+#define SH_L A5
 //display control pins
 #define OLED_MOSI  11
-#define OLED_CLK   13
+#define OLED_CLK   12
+#define OLED_CS    10
 #define OLED_DC    9
-#define OLED_CS    8
-#define OLED_RESET 10
+#define OLED_RESET 8
+#define OLED_VCC1  6
+#define OLED_VCC2  10
+//LED
+#define BAT_LED    5
 
 // ---------- SOFTWARE SETTINGS ----------
 //timeouts for button presses
