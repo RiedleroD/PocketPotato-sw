@@ -72,7 +72,10 @@ void loop() {
 		case 4:
 			pong::run();
 			break;
-		case 5:
+    case 5:
+      dino::game();
+      break;
+		case 6:
 			showSettings();
 			break;
 	}
