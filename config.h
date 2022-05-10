@@ -30,6 +30,7 @@
 
 #define ADR_SNAKESCORE 16 // 16 bits!
 #define ADR_PONGSCORE 18 // 16 bits!
+#define ADR_DINOSCORE 32 //16 bits
 
 // ---------- APPS ----------
 //Menus must be have an Array and the corresponding length as PROGMEM variables.
@@ -39,5 +40,4 @@
 //for more info → see the macro in funcs.h
 
 //Main Menu
-
-MENUSTRINGS6(app,"Button Test","Testgame","EEPROM Test","Snake","Pong","Settings");
+MENUSTRINGS7(app,"Button Test","Testgame","EEPROM Test","Snake","Pong","Dino","Settings");
