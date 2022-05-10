@@ -1,24 +1,7 @@
 namespace snake{
-	const char _menu0[] PROGMEM = "Start";
-	const char _menu1[] PROGMEM = "Score";
-	const char _menu2[] PROGMEM = "Guide";
-	const char _menu3[] PROGMEM = "Close";
-	const char* const menus[] PROGMEM = {_menu0,_menu1,_menu2,_menu3};
-	const int menucount PROGMEM = sizeof(menus)/sizeof(char*);
-	
-	const char _speed1[] PROGMEM = "Snail's pace";
-	const char _speed3[] PROGMEM = "Toddler Speed";
-	const char _speed5[] PROGMEM = "Acceptable";
-	const char _speed7[] PROGMEM = "Racing Mode";
-	const char _speed9[] PROGMEM = "Lightspeed";
-	const char* const speeds[] PROGMEM = {_speed1,_speed3,_speed5,_speed7,_speed9};
-	const int speedcount PROGMEM = sizeof(speeds)/sizeof(char*);
-	
-	const char _zoom1[] PROGMEM = "Blindworm";
-	const char _zoom2[] PROGMEM = "Grass Snake";
-	const char _zoom3[] PROGMEM = "Anaconda";
-	const char* const zooms[] PROGMEM = {_zoom1,_zoom2,_zoom3};
-	const int zoomcount PROGMEM = sizeof(zooms)/sizeof(char*);
+	MENUSTRINGS4(menu,"Start","Score","Guide","Close");
+	MENUSTRINGS5(speed,"Snail's pace","Toddler Speed","Acceptable","Racing Mode","Lightspeed");
+	MENUSTRINGS3(zoom,"Blindworm","Grass Snake","Anaconda");
 	
 	const char manual[] PROGMEM = "Collect the apples and get longer without colliding with yourself.\n\nUP+DOWN closes the game.";
 	
@@ -68,14 +51,23 @@ namespace snake{
 		//setting initial apple coords
 		uint8_t appleCoords[2] = {0,0};
 		genApples(appleCoords,zoom);
-		uint32_t t1;
 		//setting color to invert what's behind it
-		display.setTextColor(SSD1306_INVERSE);
+		display.setTextColor(INVERT);
 		//boolean to signal when you died
 		bool dead = false;
 		//I use blocks here to eliminate temporary variables when they're not needed anymore
 		while(true){
-			t1 = millis();
+			//throttle frametime to set speed
+			for(uint8_t i=0;i<5;i++){
+				smartSleep(12-speed);
+				//ticking buttons to keep em working
+				up.tick();
+				down.tick();
+				left.tick();
+				right.tick();
+				sh_r.tick();
+				sh_l.tick();
+			}
 			//drawing snake + tail-related collision detection
 			{
 				display.clearDisplay();
@@ -131,7 +123,7 @@ namespace snake{
 					Serial.println(hiscore);
 					if(hiscore<score){//checking for highscore
 						display.setCursor(34,32);//centered text
-						display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);//overwrites background
+						display.setTextColor(WHITE,BLACK);//overwrites background
 						display.print(F("HIGHSCORE!"));
 						display.display();
 						EEPROM.put(ADR_SNAKESCORE,score);
@@ -188,15 +180,6 @@ namespace snake{
 				genApples(appleCoords,zoom);
 				//add one length
 				++partAmnt;
-			}
-			//throttle frametime to set speed
-			while((millis()-t1)<(60-5*speed)){
-				up.tick();
-				down.tick();
-				left.tick();
-				right.tick();
-				sh_r.tick();
-				sh_l.tick();
 			}
 		}
 	}

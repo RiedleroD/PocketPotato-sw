@@ -5,6 +5,7 @@
 #include <Adafruit_SSD1306.h>
 #include <GyverButton.h>
 #include <util/delay.h>
+#include "funcs.h"
 #include "config.h"
 #include "bitmaps.h"
 
@@ -69,9 +70,12 @@ void loop() {
 			snake::run();
 			break;
 		case 4:
-			dino::game();
+			pong::run();
 			break;
-		case 5:
+    case 5:
+      dino::game();
+      break;
+		case 6:
 			showSettings();
 			break;
 	}
