@@ -36,4 +36,4 @@
 //for more info → see the macro in funcs.h
 
 //Main Menu
-MENUSTRINGS6(app,"Button Test","Testgame","EEPROM Test","Snake","Pong","Dino","Settings");
+MENUSTRINGS7(app,"Button Test","Testgame","EEPROM Test","Snake","Pong","Dino","Settings");
