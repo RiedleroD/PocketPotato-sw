@@ -19,7 +19,7 @@ namespace snake{
 										(6-getPartMaskOffset(index)) \
 									  )
 	inline uint16_t getScore(uint8_t partAmnt,uint8_t speed,uint8_t zoom){
-		return (partAmnt-3)*speed/(1 << (zoom-1));
+		return 4*(partAmnt-3)*speed/(1 << (zoom-1));
 	}
 	void genApples(uint8_t* arr,const uint8_t zoom){
 		do{
