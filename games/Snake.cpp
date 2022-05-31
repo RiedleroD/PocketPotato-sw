@@ -146,7 +146,7 @@ namespace snake{
 					direction=0b00;
 				else if(down.isClick() && direction!=0b11)
 					direction=0b01;
-				else if(down.isHold() && up.isHold())
+				else if(sh_l.isHold())
 					return;
 				//moving head
 				switch(direction){

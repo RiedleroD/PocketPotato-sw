@@ -10,7 +10,7 @@ void eepromtest() {
 			num -= 1;
 		if(right.isClick())
 			EEPROM.put(ADR_TESTSCORE, num);
-		if(left.isClick())
+		if(left.isClick() || sh_l.isHold())
 			return;
 
 		display.clearDisplay();

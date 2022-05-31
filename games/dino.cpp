@@ -73,7 +73,7 @@ namespace dino {
 			display.display();
 
 			//return to menu
-			if(left.isHold())
+			if(left.isHold() || sh_l.isHold())
 				return;
 		}
 		uint16_t score = (millis()-startTime)/100;

@@ -76,7 +76,7 @@ namespace pong{
 				if(right.state() && y2<(64-paddle_size))
 					y2++;
 			}
-			if(sh_l.isClick())
+			if(sh_l.isHold())
 				return;
 		/*paddle AI in PvE mode*/
 		if(mode==1){

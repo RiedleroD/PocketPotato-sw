@@ -61,7 +61,7 @@ void gameTest() {
 		drawTexture(x, y, smile, 6, 4);
 
 		display.display();
-		if(up.isHold() && down.isHold())
+		if(sh_l.isHold())
 			return;
 	}
 }
