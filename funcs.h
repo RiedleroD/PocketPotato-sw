@@ -39,16 +39,6 @@
 		MENUSTRING(name ## 5,s5);\
 		const char* const name ## s[] PROGMEM = {_ ## name ## 1,_ ## name ## 2,_ ## name ## 3,_ ## name ## 4,_ ## name ## 5};\
 		MENUCOUNT(name)
-	#define MENUSTRINGS7(name,s1,s2,s3,s4,s5,s6,s7)\
-		MENUSTRING(name ## 1,s1);\
-		MENUSTRING(name ## 2,s2);\
-		MENUSTRING(name ## 3,s3);\
-		MENUSTRING(name ## 4,s4);\
-		MENUSTRING(name ## 5,s5);\
-		MENUSTRING(name ## 6,s6);\
-		MENUSTRING(name ## 7,s7);\
-		const char* const name ## s[] PROGMEM = {_ ## name ## 1,_ ## name ## 2,_ ## name ## 3,_ ## name ## 4,_ ## name ## 5,_ ## name ## 6,_ ## name ## 7};\
-		MENUCOUNT(name)
 #endif
 
 #ifndef FUNCS_REPLACE

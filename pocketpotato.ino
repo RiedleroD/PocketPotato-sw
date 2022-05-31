@@ -63,24 +63,15 @@ void loop() {
 	beginGame();
 	switch (select) {
 		case 0:
-			testButtons();
-			break;
-		case 1:
-			gameTest();
-			break;
-		case 2:
-			eepromtest();
-			break;
-		case 3:
 			snake::run();
 			break;
-		case 4:
+		case 1:
 			pong::run();
 			break;
-    case 5:
-      dino::game();
-      break;
-		case 6:
+		case 2:
+			dino::game();
+			break;
+		case 3:
 			showSettings();
 			break;
 	}
