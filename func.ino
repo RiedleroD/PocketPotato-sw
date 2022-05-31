@@ -124,7 +124,16 @@ uint32_t _smartSleepCheckPoint = 0;
 void smartSleep(const uint32_t want_dt){
 	uint32_t is_dt = millis()-_smartSleepCheckPoint;
 	if(is_dt < want_dt){
-		delay(want_dt - is_dt);
+		//sleeping off the leftover time while updating the buttons
+		for(uint16_t x=(want_dt - is_dt)/10;x>0;x--){
+			delay(10);
+			up.tick();
+			down.tick();
+			left.tick();
+			right.tick();
+			sh_r.tick();
+			sh_l.tick();
+		}
 	}
 	_smartSleepCheckPoint += is_dt;//no new millis() for precision - and also speed
 }
