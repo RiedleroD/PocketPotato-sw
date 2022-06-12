@@ -21,9 +21,9 @@ namespace menu{
 					select = 0;
 				didChange = true;
 			}
-			if(right.isClick())
+			if(right.isClick() || sh_r.isClick())
 				return select+1;
-			if(left.isClick())
+			if(left.isClick() || sh_l.isClick())
 				return 0;
 			
 			if(didChange){
