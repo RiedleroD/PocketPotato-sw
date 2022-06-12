@@ -58,21 +58,21 @@ void setup() {
 }
 
 void loop() {
-	const uint8_t select = menu::draw(apps, appcount);
+	const uint8_t select = menu::run(apps, appcount);
 
 	beginGame();
 	switch (select) {
 		case 0:
-			snake::run();
+			showSettings();
 			break;
 		case 1:
-			pong::run();
+			snake::run();
 			break;
 		case 2:
-			dino::game();
+			pong::run();
 			break;
 		case 3:
-			showSettings();
+			dino::game();
 			break;
 	}
 	endGame();

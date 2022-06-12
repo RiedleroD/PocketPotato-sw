@@ -1,5 +1,5 @@
 namespace pong{
-	MENUSTRINGS5(menu,"Start: PvP","       PvE","       PvW","Score","Close");
+	MENUSTRINGS4(menu,"Start: PvP","       PvE","       PvW","Score");
 	MENUSTRINGS4(speed,"Slowest","Slow","Normal","Fast");
 	MENUSTRINGS5(paddlesize,"Pixel","Stick","Paddle","Pipe","Tower");
 	
@@ -165,22 +165,29 @@ namespace pong{
 	void run(){
 		uint8_t mode;
 		while(true){
-			mode = menu::draw(menus,menucount);
+			mode = menu::run(menus,menucount);
 			switch(mode){
 				case 0:
+					return;
 				case 1:
 				case 2:
+				case 3:
+					m1label:
+					uint8_t psize = menu::run(paddlesizes,paddlesizecount);
+					if(psize==0)
+						continue;
+					uint8_t speed = menu::run(speeds,speedcount);
+					if(speed==0)
+						goto m1label;
 					game(
-						pow(2, 1+menu::draw(paddlesizes,paddlesizecount)),
-						1 + 3*menu::draw(speeds,speedcount),
+						pow(2, 1+(psize-1)),
+						1 + 3*(speed-1),
 						mode
 					);
 					break;
-				case 3:
+				case 4:
 					showScore();
 					break;
-				case 4:
-					return;
 			}
 		}
 	}

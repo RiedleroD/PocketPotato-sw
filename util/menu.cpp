@@ -1,5 +1,8 @@
 namespace menu{
-	uint8_t draw(const char* const texts[], const uint8_t length) {
+	/**
+	 * Returns 0 if exited without selecting, otherwise the index of the selected + 1
+	 */
+	uint8_t run(const char* const texts[], const uint8_t length) {
 		uint8_t select = 0;
 		bool didChange = true;
 		//the maxIndex has to be calculated from a parameter as for some reason
@@ -19,7 +22,9 @@ namespace menu{
 				didChange = true;
 			}
 			if(right.isClick())
-				return select;
+				return select+1;
+			if(left.isClick())
+				return 0;
 			
 			if(didChange){
 				//drawing of menu

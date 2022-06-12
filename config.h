@@ -40,4 +40,4 @@
 //for more info → see the macro in funcs.h
 
 //Main Menu
-MENUSTRINGS4(app,"Snake","Pong","Dino","Settings");
+MENUSTRINGS3(app,"Snake","Pong","Dino");

@@ -1,5 +1,5 @@
 namespace snake{
-	MENUSTRINGS4(menu,"Start","Score","Guide","Close");
+	MENUSTRINGS3(menu,"Start","Score","Guide");
 	MENUSTRINGS5(speed,"Snail's pace","Toddler Speed","Acceptable","Racing Mode","Lightspeed");
 	MENUSTRINGS3(zoom,"Blindworm","Grass Snake","Anaconda");
 	
@@ -203,21 +203,25 @@ namespace snake{
 	}
 	void run(){
 		while(true){
-			switch(menu::draw(menus,menucount)){
+			switch(menu::run(menus,menucount)){
 				case 0:
-					game(
-						1+menu::draw(zooms,zoomcount),
-						1+menu::draw(speeds,speedcount)*2
-						);
-					break;
+					return;
 				case 1:
-					showScore();
+					m1label:
+					uint8_t zoom = menu::run(zooms,zoomcount);
+					if(zoom==0)
+						continue;
+					uint8_t speed = menu::run(speeds,speedcount);
+					if(speed==0)
+						goto m1label;
+					game(1+(zoom-1),1+(speed-1)*2);
 					break;
 				case 2:
-					showManual();
+					showScore();
 					break;
 				case 3:
-					return;
+					showManual();
+					break;
 			}
 		}
 	}
