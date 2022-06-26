@@ -3,6 +3,7 @@
 # Basically the same algorithm as this one here: https://youtu.be/aF1Yw_wu2cM
 # with some minor deviations and lots of bugs
 #
+# TODO: add back the begin state flag
 # TODO: describe flags, delta encoding and RLE in Readme or something
 from sys import argv, exit
 from os import makedirs, path, listdir
@@ -27,9 +28,6 @@ def decompress(tx:str,wholesize:int) -> str:
 	return str.ljust(result,wholesize,'a')
 
 def compress(tx:str) -> str:
-	
-	#removing trailing zeroes because they're later filled in via width/height of the texture
-	#tx=str.rstrip(tx,'0')
 	
 	encs=([],[],[],[])#TODO: refactor. This is garbage and inefficient and I don't wanna see it
 	
