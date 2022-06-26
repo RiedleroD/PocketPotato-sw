@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 #
 # Basically the same algorithm as this one here: https://youtu.be/aF1Yw_wu2cM
-# with blocks of 8 bits instead of just 2 because I am lazy.
-# and also some other minor deviations
+# with some minor deviations and lots of bugs
 #
 # TODO: describe flags, delta encoding and RLE in Readme or something
-# TODO: block variants
 from sys import argv, exit
 from os import makedirs, path, listdir
 from math import log2,floor
@@ -13,54 +11,49 @@ from random import randrange
 import pyjson5	#pyjson5
 import png		#pypng
 
-def decompress(tx:str) -> str:
-	flags=int(tx[:3],2)
-	tx=tx[3:]
-	if flags & 0x01:
-		tx=8*"0"+tx
-	if flags & 0x02:
-		if flags & 0x04:
-			return delta_decode(delta_decode(RLEdecode(tx)))
-		else:
-			return delta_decode(RLEdecode(tx))
-	else:
-		if flags & 0x04:
-			return delta_encode(RLEdecode(tx))
-		else:
-			return RLEdecode(tx)
+def decompress(tx:str,wholesize:int) -> str:
+	mode=tx[0:2]
+	tx=tx[2:]
+		
+	result = RLEdecode(tx,0)
+	
+	if mode=="01":
+		result = delta_encode(result)
+	elif mode=="10":
+		result = delta_decode(result)
+	elif mode=="11":
+		result = delta_decode(delta_decode(result))
+	
+	return str.ljust(result,wholesize,'a')
 
 def compress(tx:str) -> str:
+	
+	#removing trailing zeroes because they're later filled in via width/height of the texture
+	#tx=str.rstrip(tx,'0')
+	
 	encs=([],[],[],[])#TODO: refactor. This is garbage and inefficient and I don't wanna see it
 	
 	#array for playing favourites
-	for block_size in (8,4,2,10,6,3,5,9):
+	for block_size in (2,3,4,5,6,7,8):
 		encs[0].append(
-			add_start_bit(
-				RLEencode(tx,block_size)
-			)
+			RLEencode(tx,block_size)
 		)
 		encs[1].append(
-			add_start_bit(
-				RLEencode(
-					delta_encode(tx),
-					block_size
-				)
+			RLEencode(
+				delta_decode(tx),
+				block_size
 			)
 		)
 		encs[2].append(
-			add_start_bit(
-				RLEencode(
-					delta_decode(tx),
-					block_size
-				)
+			RLEencode(
+				delta_encode(tx),
+				block_size
 			)
 		)
 		encs[3].append(
-			add_start_bit(
-				RLEencode(
-					delta_encode(delta_encode(tx)),
-					block_size
-				)
+			RLEencode(
+				delta_encode(delta_encode(tx)),
+				block_size
 			)
 		)
 	for a in encs:
@@ -73,42 +66,34 @@ def compress(tx:str) -> str:
 		return "01"+chosen
 	elif chosen in encs[2]:
 		return "10"+chosen
-	else:
+	elif chosen in encs[3]:
 		return "11"+chosen
-
-def add_start_bit(tx):
-	if tx[0:8]=="0"*8:
-		return "1"+tx[8:]
 	else:
-		return "0"+tx
+		raise Exception("Unreachable")
 
 """decodes binary string to binary string per RLE"""
-def RLEdecode(tx:str,block_size=None) -> str:
+def RLEdecode(tx:str,wholesize:int) -> str:
 	decoded=[]
-	i=0
-	curRLE=False
+	i=3
 	l=len(tx)
-	if block_size==None:
-		i=3
-		block_size=2+(int(tx[0:3],2))
+	block_size=2+(int(tx[0:3],2))
 	assert 2<=block_size<=10#we need at least a block size of 2 and can only encode up to 10, since we only have 3 bits for that in the flag
-	while i<l:
+	assert block_size<=8#the current decoder implementation doesn't support more than 8 due to the helper functions
+	while i<=l:
 		curBlock=tx[i:i+block_size]
 		i+=block_size
 		if curBlock=="0"*block_size:
-			if i>=l:#safety measure in case we end on an 0x00
-				break
 			packet_length=get_RLE_packet_length(tx[i:])
+			if i+packet_length>l:#safety measure in case we end on an 0x00
+				break
 			decoded.append("0"*block_size*decode_RLE_packet(tx[i:i+packet_length],packet_length))
 			i+=packet_length
-		elif len(curBlock)<block_size:
-			break #last block can be incomplete, but is discarded then
 		else:#non-RLE packets are just raw data. No decoding here.
 			decoded.append(curBlock)
-	return "".join(decoded)
+	return str.ljust("".join(decoded),wholesize,'a')
 
 """encodes list of hexadecimal values to binary string per RLE"""
-def RLEencode(tx:str,block_size=8) -> str:
+def RLEencode(tx:str,block_size:int) -> str:
 	encoded=""
 	i=0 # index in encoded texture
 	curRLE=0
@@ -118,7 +103,7 @@ def RLEencode(tx:str,block_size=8) -> str:
 		curBlock=tx[i:i+block_size]
 		i+=block_size
 		if curBlock=="0"*block_size:
-			if not curRLE:
+			if curRLE==0:
 				encoded+="0"*block_size
 			curRLE+=1
 		else:
@@ -128,7 +113,6 @@ def RLEencode(tx:str,block_size=8) -> str:
 			encoded+=curBlock
 	if curRLE:
 		encoded+=encode_RLE_packet(curRLE)
-		curRLE=0
 	return f"{block_size-2:03b}"+encoded
 
 """encodes a RLE packet"""
@@ -236,12 +220,20 @@ if __name__=="__main__":
 		print("testing RLE encoding")
 		for name, tx in textures.items():
 			tx=get_binstring_from_numlist(tx[2])
-			tx2=RLEdecode(RLEencode(tx))
-			if tx!=tx2:
-				print(f"RLE not gut: {name} is fuckd\n{tx}\n{tx2}")
+			for block_size in range(2,9):
+				tx2=RLEdecode(RLEencode(tx,block_size),len(tx))
+				if tx!=tx2:
+					print(f"RLE not gut: {name} with block_size {block_size} is fuckd\n{tx}\n{tx2}")
+		for i in range(1000):
+			tx=f"{randrange(2**16):016b}"
+			for block_size in range(2,9):
+				cx=RLEencode(tx,block_size)
+				tx2=RLEdecode(cx,len(tx))
+				if tx!=tx2:
+					print(f"RLE not gut: random with block_size {block_size} is fuckd\n{cx}\n{tx}\n{tx2}")
 		print("testing delta encoding")
 		for i in range(1000):
-			randbin=f"{randrange(2**16):b}"
+			randbin=f"{randrange(2**16):016b}"
 			deltbin=delta_decode(delta_encode(randbin))
 			if(randbin!=deltbin):
 				print(f"delta not gut:\n{randbin}\n{deltbin}")
@@ -249,11 +241,11 @@ if __name__=="__main__":
 		for name, tx in textures.items():
 			tx=get_binstring_from_numlist(tx[2])
 			cx=compress(tx)
-			tx2=decompress(cx)
+			tx2=decompress(cx,len(tx))
 			if tx!=tx2:
-				print(f"final {name} not gut:\n{tx}\n{tx2}")
+				print(f"final {name} not gut:\n{cx}\n{tx}\n{tx2}")
 			else:
-				print(f"{100*(1-len(cx)/len(tx)):2.0f}% compression: {name} ({len(cx)-len(tx):+d}b)")
+				print(f"{100*(1-len(cx)/len(tx)):-3.0f}% compression: {name} ({len(cx)-len(tx):+d}b)",end="\n\n")
 		exit()
 	elif argv[1] in ("c","compress"):
 		func = compress
