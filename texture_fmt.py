@@ -72,9 +72,11 @@ def compress(tx:str) -> str:
 """decodes binary string to binary string per RLE"""
 def RLEdecode(tx:str,wholesize:int) -> str:
 	decoded=[]
-	i=3
+	i=4
+	block_size = 2+(int(tx[0:3],2))
+	if tx[3]=="1":
+		tx=tx[:4]+("0"*block_size)+tx[4:]
 	l=len(tx)
-	block_size=2+(int(tx[0:3],2))
 	assert 2<=block_size<=10#we need at least a block size of 2 and can only encode up to 10, since we only have 3 bits for that in the flag
 	assert block_size<=8#the current decoder implementation doesn't support more than 8 due to the helper functions
 	while i<=l:
@@ -96,13 +98,17 @@ def RLEencode(tx:str,block_size:int) -> str:
 	i=0 # index in encoded texture
 	curRLE=0
 	l=len(tx)
+	start_state=0
 	assert 2<=block_size<=10#see RLEdecode
 	while i<l:
 		curBlock=tx[i:i+block_size]
 		i+=block_size
 		if curBlock=="0"*block_size:
 			if curRLE==0:
-				encoded+="0"*block_size
+				if i==block_size:
+					start_state=1
+				else:
+					encoded+="0"*block_size
 			curRLE+=1
 		else:
 			if curRLE:
@@ -111,7 +117,7 @@ def RLEencode(tx:str,block_size:int) -> str:
 			encoded+=curBlock
 	if curRLE:
 		encoded+=encode_RLE_packet(curRLE)
-	return f"{block_size-2:03b}"+encoded
+	return f"{block_size-2:03b}{start_state:1b}{encoded:s}"
 
 """encodes a RLE packet"""
 def encode_RLE_packet(num:int) -> str:
