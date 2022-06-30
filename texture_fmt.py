@@ -121,7 +121,7 @@ def RLEencode(tx:str,block_size:int) -> str:
 
 """encodes a RLE packet"""
 def encode_RLE_packet(num:int) -> str:
-	assert num>0
+	assert 0<num<510
 	num+=1	#otherwise we can't encode the number 1
 	l=get_bitwise_num_length(num)
 	length_pack=(1 << l-1)-2	#e.g. 110 for l==3 and 1110 for l==4
