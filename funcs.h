@@ -52,9 +52,12 @@
 	#define drawTexture(x,y,texture,width,height) drawTextureWithPalette(x,y,texture,width,height,WHITE,BLACK)
 #endif
 
+#include "util/bitops.h"
+
 //actual function headers
 
 extern void drawTextureWithPalette(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height,const uint16_t color1,const uint16_t color2);
+extern void drawCompressedTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height,const uint16_t color1,const uint16_t color2);
 extern void drawZoomedPixel(const uint8_t x,const uint8_t y,uint8_t zoom);
 extern void fillRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);
 extern void drawRect(const uint8_t x,const uint8_t y,const uint8_t width,const uint8_t height,const uint8_t color);

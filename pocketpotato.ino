@@ -18,6 +18,7 @@ GButton right(BTN_RIGHT);
 GButton sh_r(SH_R);
 GButton sh_l(SH_L);
 
+#include "util/bitops.cpp"
 #include "util/menu.cpp"
 #include "games/games.cpp"
 

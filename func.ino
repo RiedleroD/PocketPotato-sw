@@ -1,6 +1,8 @@
+#include "funcs.h"
+
 void showLogo() { // show logo with (bad) fade-in and -out
 	setBrightness(0);
-	drawTexture(0, 0, logo, 128,64);
+	drawCompressedTexture(0,0,logo_compressed,128,64,WHITE,BLACK);
 	display.display();
 	//will delay for about 500ms
 	for(uint8_t i=1;i!=0;++i){
@@ -52,6 +54,118 @@ void drawTextureWithPalette(const uint8_t _x,const uint8_t _y,const uint8_t text
 			}else{
 				j >>= 1;
 			}
+		}
+	}
+	display.endWrite();
+}
+
+/*!
+ * Draws a compressed texture to screen
+ * the texture goes from left to right, top to bottom.
+ * WARNING: barely any boundary checking
+ * @param	_x		left boundary on the x-axis
+ * @param	_y		top boundary on the y-axis
+ * @param	texture	texture to be drawn
+ * @param	width	width of the texture
+ * @param	color1	primary color
+ * @param	color2	secondary color
+ */
+void drawCompressedTexture(const uint8_t _x,const uint8_t _y,const uint8_t texture[],const uint8_t width,const uint8_t height,const uint16_t color1,const uint16_t color2){
+	struct DeltaRegister{//lets me easily access them while also staying compact
+		bool r1: 1,
+		     r2: 1;
+		//this is brilliant! Sometimes I really love C++.
+	};
+
+	enum State{PLAIN,RLE};//Plain and Run-length-encoding packets
+	enum Mode{R,ER,DR,DDR};//RLE, Delta-Encode + RLE, Delta-Decode + RLE, Delta-Decode*2 + RLE
+	
+	//reading header
+	const Mode mode = bitops::read_n(0,2,texture);
+	const uint8_t block_size = bitops::read_n(2,3,texture);
+	State state = bitops::read_single(5,texture);
+	DeltaRegister delta_flags = {0,0};
+	
+	auto delta_context_helper= [&](bool bit){
+		switch(mode){
+			case Mode::ER:
+				bool prevr1 = delta_flags.r1;
+				delta_flags.r1 = bit;
+				return (bool)(bit ^ prevr1);
+			case Mode::R:
+				return bit;
+			case Mode::DDR:
+				delta_flags.r2 ^= bit;
+				bit = delta_flags.r2;
+				//purposefully no break nor return;
+			case Mode::DR:
+				delta_flags.r1 ^= bit;
+				return delta_flags.r1;
+		}
+	};
+	//indices for within the compressed texture and the output
+	uint16_t in_i = 6;//header is 6 bit long, so we start at index 6
+	uint16_t out_i = 0;
+	
+	display.startWrite();
+	while(out_i < width*height){
+		if(state==State::PLAIN){
+			uint8_t block = bitops::read_n(in_i,block_size,texture);
+			if(block==0) state=State::RLE;
+			else{
+				for(uint8_t _i=0;_i<block_size;_i++){
+					const uint8_t color =
+						delta_context_helper(block & (1 << block_size-_i-1))
+						? color1 : color2;
+					if(color!=TRANSPARENT)
+						display.drawPixel(_x+(out_i+_i)%width,_y+(out_i+_i)/width,color);
+				}
+				display.display();
+				out_i+=block_size;
+			}
+			in_i+=block_size;
+		}else{
+			//counting to the first zero
+			uint8_t packet_length = 1;
+			while(true){
+				if(!bitops::read_single(in_i+packet_length-1,texture)){
+					// -1 because the length is one more than the last index
+					break;
+				}
+				packet_length++;
+			}
+			in_i+=packet_length;
+			assert(packet_length<=8);
+			//extracting packet value
+			uint16_t packet_value =
+				(bitops::read_n(in_i,packet_length,texture)//reading pre-truncated word (since the first bit is obviously a 1, it's been truncated)
+				+(1 << packet_length)//adding missing 1 at the beginning of the word
+				-1)//subtracting one, so it's possible to encode 1
+				*block_size;//times block size, because that's what it encodes
+			//drawing if not everything is transparent
+			if(mode==Mode::R && color2==TRANSPARENT){
+				;//delta-decoding isn't on, so it's all just transparent
+			}else if(mode==Mode::ER && color2==TRANSPARENT){
+				//delta-ENcoding: either one single pixel or nothing at all
+				if(delta_flags.r1==1){
+					display.drawPixel(_x+out_i%width,_y+out_i/width,color1);
+					delta_flags.r1=0;
+				}
+			}else if(mode==Mode::DR && ((!delta_flags.r1 && color2==TRANSPARENT) || (delta_flags.r1 && color1==TRANSPARENT))){
+				//more complex than I'm willing to describe in a comment, but also everything is transparent
+			}else{
+				for(uint16_t _i=0;_i<packet_value;_i++){
+					display.drawPixel(
+						_x+(out_i+_i)%width,
+						_y+(out_i+_i)/width,
+						delta_context_helper(0) ? color1 : color2
+					);
+				}
+				display.display();
+			}
+			in_i+=packet_length;
+			out_i+=packet_value*block_size;
+			state=State::PLAIN;
 		}
 	}
 	display.endWrite();
