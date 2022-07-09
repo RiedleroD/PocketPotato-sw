@@ -120,26 +120,25 @@ void drawCompressedTexture(const uint8_t _x,const uint8_t _y,const uint8_t textu
 					if(color!=TRANSPARENT)
 						display.drawPixel(_x+(out_i+_i)%width,_y+(out_i+_i)/width,color);
 				}
-				display.display();
 				out_i+=block_size;
 			}
 			in_i+=block_size;
 		}else{
 			//counting to the first zero
-			uint8_t packet_length = 1;
+			uint8_t data_length = 1;
 			while(true){
-				if(!bitops::read_single(in_i+packet_length-1,texture)){
+				if(!bitops::read_single(in_i+data_length-1,texture)){
 					// -1 because the length is one more than the last index
 					break;
 				}
-				packet_length++;
+				data_length++;
 			}
-			in_i+=packet_length;
-			assert(packet_length<=8);
+			in_i+=data_length;
+			assert(data_length<=8);
 			//extracting packet value
 			uint16_t packet_value =
-				(bitops::read_n(in_i,packet_length,texture)//reading pre-truncated word (since the first bit is obviously a 1, it's been truncated)
-				+(1 << packet_length)//adding missing 1 at the beginning of the word
+				(bitops::read_n(in_i,data_length,texture)//reading pre-truncated word (since the first bit is obviously a 1, it's been truncated)
+				+(1 << data_length)//adding missing 1 at the beginning of the word
 				-1)//subtracting one, so it's possible to encode 1
 				*block_size;//times block size, because that's what it encodes
 			//drawing if not everything is transparent
@@ -155,16 +154,17 @@ void drawCompressedTexture(const uint8_t _x,const uint8_t _y,const uint8_t textu
 				//more complex than I'm willing to describe in a comment, but also everything is transparent
 			}else{
 				for(uint16_t _i=0;_i<packet_value;_i++){
-					display.drawPixel(
-						_x+(out_i+_i)%width,
-						_y+(out_i+_i)/width,
-						delta_context_helper(0) ? color1 : color2
-					);
+					uint8_t color = delta_context_helper(0) ? color1 : color2;
+					if(color!=TRANSPARENT)
+						display.drawPixel(
+							_x+(out_i+_i)%width,
+							_y+(out_i+_i)/width,
+							color);
 				}
 				display.display();
 			}
-			in_i+=packet_length;
-			out_i+=packet_value*block_size;
+			in_i+=data_length;
+			out_i+=packet_value;
 			state=State::PLAIN;
 		}
 	}
